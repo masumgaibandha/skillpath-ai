@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+
+# env files — ignore local/secret values, but keep the example template tracked
+.env*
+!.env.example

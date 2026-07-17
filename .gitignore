@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Env files at the repo root (client/ and server/ manage their own)
+.env
+.env.local
+.env.*.local
+
+# Stray node_modules if npm is ever run from the repo root
+/node_modules
