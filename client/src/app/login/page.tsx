@@ -1,24 +1,16 @@
 "use client";
 
 import { Button, Input, toast } from "@heroui/react";
-import { BookOpen, MessagesSquare, Sparkles, TriangleAlert, Zap } from "lucide-react";
+import { TriangleAlert, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import heroImage from "@/assets/hero-learning-path.webp";
-import { AuthSplitLayout, type AuthBenefit } from "@/components/AuthSplitLayout";
 import { GoogleIcon } from "@/components/GoogleIcon";
 import { PasswordInput } from "@/components/PasswordInput";
 import { authClient } from "@/lib/auth-client";
 
 const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL ?? "demo@skillpathai.com";
 const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "DemoPass123!";
-
-const BENEFITS: AuthBenefit[] = [
-  { icon: Sparkles, text: "AI study plans tailored to your goals and schedule" },
-  { icon: BookOpen, text: "24 real courses across 12 in-demand categories" },
-  { icon: MessagesSquare, text: "Chat assistant for instant course recommendations" },
-];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -75,13 +67,11 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthSplitLayout
-      image={heroImage}
-      headline="Learn with a roadmap built for you"
-      description="Sign in to pick up where you left off, track your enrolled courses, and get AI-guided next steps."
-      benefits={BENEFITS}
-    >
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm shadow-zinc-200/50">
+    <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-zinc-50 px-4 py-16">
+      {/* Clean, minimal backdrop — a soft tonal wash, no image. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-indigo-50/70 via-transparent to-transparent" />
+
+      <div className="relative w-full max-w-sm rounded-2xl border border-zinc-200/70 bg-white/75 p-8 shadow-xl shadow-zinc-900/5 backdrop-blur-xl">
         <h1 className="text-2xl font-bold text-zinc-900">Log in</h1>
         <p className="mt-1 text-sm text-zinc-500">Welcome back to SkillPath AI.</p>
 
@@ -159,6 +149,6 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-    </AuthSplitLayout>
+    </div>
   );
 }

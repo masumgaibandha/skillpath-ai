@@ -1,22 +1,14 @@
 "use client";
 
 import { Button, Input, toast } from "@heroui/react";
-import { Check, GraduationCap, ShieldCheck, Sparkles, TriangleAlert, User, X } from "lucide-react";
+import { Check, TriangleAlert, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import heroImage from "@/assets/hero-learn-grow.webp";
 import { authClient } from "@/lib/auth-client";
 import { PASSWORD_REQUIREMENTS, isStrongPassword } from "@/lib/password";
-import { AuthSplitLayout, type AuthBenefit } from "@/components/AuthSplitLayout";
 import { GoogleIcon } from "@/components/GoogleIcon";
 import { PasswordInput } from "@/components/PasswordInput";
-
-const BENEFITS: AuthBenefit[] = [
-  { icon: Sparkles, text: "Get a personalized AI study roadmap in minutes" },
-  { icon: GraduationCap, text: "Own and manage your own courses — no gatekeeping" },
-  { icon: ShieldCheck, text: "Free to join — enroll in free courses instantly" },
-];
 
 function isValidImageUrl(value: string): boolean {
   try {
@@ -95,13 +87,11 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthSplitLayout
-      image={heroImage}
-      headline="Build skills that actually move you forward"
-      description="Create a free account to get an AI-generated study plan, enroll in real courses, and track your progress."
-      benefits={BENEFITS}
-    >
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm shadow-zinc-200/50">
+    <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-zinc-50 px-4 py-16">
+      {/* Clean, minimal backdrop — a soft tonal wash, no image. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-indigo-50/70 via-transparent to-transparent" />
+
+      <div className="relative w-full max-w-md rounded-2xl border border-zinc-200/70 bg-white/75 p-8 shadow-xl shadow-zinc-900/5 backdrop-blur-xl">
         <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
         <p className="mt-1 text-sm text-zinc-500">Start learning with SkillPath AI, free.</p>
 
@@ -290,6 +280,6 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
-    </AuthSplitLayout>
+    </div>
   );
 }
