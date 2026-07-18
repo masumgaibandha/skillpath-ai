@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { env } from "./config/env";
+import contactRouter from "./routes/contact.route";
 import courseRouter from "./routes/course.route";
 import healthRouter from "./routes/health.route";
 import meRouter from "./routes/me.route";
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api", healthRouter);
 app.use("/api", meRouter);
 app.use("/api/courses", courseRouter);
+app.use("/api/contact", contactRouter);
 
 // Express 5 forwards rejected promises from async route handlers here
 // automatically — no try/catch needed in the controllers above.
