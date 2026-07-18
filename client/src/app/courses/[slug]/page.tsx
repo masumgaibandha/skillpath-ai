@@ -1,9 +1,10 @@
-import { Button, Chip } from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { BookOpen, Check, Clock, Star, User } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CourseCard } from "@/components/CourseCard";
+import { EnrollAction } from "@/components/EnrollAction";
 import type { CourseDetailResponse } from "@/lib/types";
 
 const SERVER_API_URL = process.env.API_URL ?? "http://localhost:5000";
@@ -145,10 +146,9 @@ export default async function CourseDetailPage({
               )}
             </div>
 
-            <Button variant="primary" fullWidth className="mt-4" isDisabled>
-              Enroll
-            </Button>
-            <p className="mt-2 text-center text-xs text-zinc-400">Enrollment opening soon</p>
+            <div className="mt-4">
+              <EnrollAction course={course} />
+            </div>
 
             <dl className="mt-6 flex flex-col gap-3 border-t border-zinc-100 pt-4 text-sm">
               <div className="flex justify-between">

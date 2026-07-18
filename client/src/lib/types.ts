@@ -77,3 +77,28 @@ export interface CreateCourseInput {
 export interface MyCoursesResponse {
   items: Course[];
 }
+
+// Mirrors server/src/models/Enrollment.ts
+export type EnrollmentType = "free" | "paid";
+export type EnrollmentStatus = "pending" | "active" | "refunded";
+
+export interface Enrollment {
+  _id: string;
+  userId: string;
+  courseId: string | Course;
+  type: EnrollmentType;
+  status: EnrollmentStatus;
+  amountPaid: number;
+  currency: string;
+  enrolledAt: string;
+}
+
+export interface EnrollmentStatusResponse {
+  enrolled: boolean;
+  status: EnrollmentStatus | "none";
+  type?: EnrollmentType;
+}
+
+export interface CheckoutSessionResponse {
+  url: string;
+}

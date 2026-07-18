@@ -29,6 +29,18 @@ const envSchema = z.object({
   // Seeded demo account, used by the client's "Demo Login" button.
   DEMO_USER_EMAIL: z.string().email().default("demo@skillpathai.com"),
   DEMO_USER_PASSWORD: z.string().min(8).default("DemoPass123!"),
+  // Stripe test-mode keys. Optional, same pattern as Google OAuth above —
+  // the server still starts and free enrollment still works with these
+  // unset; only paid checkout/webhook handling is disabled (see
+  // src/lib/stripe.ts). An empty string must be treated the same as unset.
+  STRIPE_SECRET_KEY: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().min(1).optional()
+  ),
+  STRIPE_WEBHOOK_SECRET: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().min(1).optional()
+  ),
 });
 
 const parsed = envSchema.safeParse(process.env);

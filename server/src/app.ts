@@ -3,10 +3,13 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { env } from "./config/env";
+import { stripeWebhook } from "./controllers/payment.controller";
 import contactRouter from "./routes/contact.route";
 import courseRouter from "./routes/course.route";
+import enrollmentRouter from "./routes/enrollment.route";
 import healthRouter from "./routes/health.route";
 import meRouter from "./routes/me.route";
+import paymentRouter from "./routes/payment.route";
 
 const app = express();
 
@@ -18,12 +21,20 @@ app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
 // name: "/*splat", not the old Express 4 bare "*".
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
+// Same reasoning as Better Auth above: Stripe's webhook signature check
+// needs the exact raw request bytes, not a body express.json() already
+// parsed. Scoped to this one path only and registered before the global
+// express.json() below — every other route keeps normal JSON parsing.
+app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), stripeWebhook);
+
 app.use(express.json());
 
 app.use("/api", healthRouter);
 app.use("/api", meRouter);
 app.use("/api/courses", courseRouter);
 app.use("/api/contact", contactRouter);
+app.use("/api/enrollments", enrollmentRouter);
+app.use("/api/payments", paymentRouter);
 
 // Express 5 forwards rejected promises from async route handlers here
 // automatically — no try/catch needed in the controllers above.
