@@ -1,6 +1,8 @@
 import { Bot, Compass, GraduationCap, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import aboutAiLearning from "@/assets/about-ai-learning.webp";
 import { fetchServerApi } from "@/lib/api";
 import { COURSE_CATEGORIES } from "@/lib/constants";
 import type { CourseListResponse } from "@/lib/types";
@@ -14,9 +16,9 @@ export default async function AboutPage() {
   const { total } = await fetchServerApi<CourseListResponse>("/api/courses?limit=1");
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold text-zinc-900 sm:text-4xl">About SkillPath AI</h1>
-      <p className="mt-4 text-lg text-zinc-600">
+      <p className="mt-4 max-w-3xl text-lg text-zinc-600">
         Most course catalogs are just a list — you're expected to already know what to search
         for and in what order to take things. SkillPath AI exists to close that gap: a real
         course catalog paired with AI that turns a goal into an actual plan.
@@ -36,6 +38,27 @@ export default async function AboutPage() {
           <p className="mt-1 text-sm text-zinc-500">built-in AI features</p>
         </div>
       </div>
+
+      <section className="mt-12 grid grid-cols-1 items-center gap-8 sm:grid-cols-2">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+          <Image
+            src={aboutAiLearning}
+            alt="Learner reviewing an AI-guided study plan"
+            fill
+            sizes="(min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-900">The AI-guided learning experience</h2>
+          <p className="mt-3 text-sm text-zinc-600">
+            Instead of leaving you to figure out course order on your own, the AI Study Planner
+            reads your goal, current level, and weekly time budget, then sequences real courses
+            from the catalog into milestones. If your circumstances change, you send feedback and
+            it regenerates the plan — the roadmap adapts to you, not the other way around.
+          </p>
+        </div>
+      </section>
 
       <section className="mt-12">
         <h2 className="text-xl font-semibold text-zinc-900">What you can do here</h2>

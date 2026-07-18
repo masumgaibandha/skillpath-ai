@@ -1,7 +1,13 @@
 import { Bot, Compass, GraduationCap, MessagesSquare, Search, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import aiFeaturesImage from "@/assets/ai-features-planner-chat.webp";
+import heroCourseDiscovery from "@/assets/hero-course-discovery.webp";
+import heroLearnGrow from "@/assets/hero-learn-grow.webp";
+import heroLearningPath from "@/assets/hero-learning-path.webp";
 import { CourseCard } from "@/components/CourseCard";
+import { HeroCarousel, type HeroSlide } from "@/components/HeroCarousel";
 import { fetchServerApi } from "@/lib/api";
 import { COURSE_CATEGORIES } from "@/lib/constants";
 import type { CourseListResponse } from "@/lib/types";
@@ -39,6 +45,36 @@ const HOW_IT_WORKS = [
   },
 ];
 
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    image: heroLearningPath,
+    imageAlt: "Learner following a personalized study roadmap on a laptop",
+    headline: "Learn with a roadmap built specifically for you",
+    description:
+      "SkillPath AI turns your goals into an AI-generated study plan — a clear, milestone-by-milestone path instead of guesswork about what to learn next.",
+    primaryCta: { label: "Explore courses", href: "/explore" },
+    secondaryCta: { label: "Create free account", href: "/signup" },
+  },
+  {
+    image: heroCourseDiscovery,
+    imageAlt: "Learner searching and filtering through a course catalog",
+    headline: "Find the right course, fast",
+    description:
+      "Search and filter 24 real courses across 12 categories — by level, price, and topic — until you find exactly what fits.",
+    primaryCta: { label: "Browse all courses", href: "/explore" },
+    secondaryCta: { label: "How it works", href: "/about" },
+  },
+  {
+    image: heroLearnGrow,
+    imageAlt: "Learner building new skills and making visible progress",
+    headline: "Build skills that actually move you forward",
+    description:
+      "Enroll free or purchase once — no subscriptions — and work toward a goal an AI helped you define.",
+    primaryCta: { label: "Get started for free", href: "/signup" },
+    secondaryCta: { label: "Explore courses", href: "/explore" },
+  },
+];
+
 const WHY_SKILLPATH = [
   "24 expertly structured courses across 12 in-demand fields, from web development to AI/ML",
   "Real filtering and search — by category, level, price, and free-vs-paid — not just a static list",
@@ -52,34 +88,7 @@ export default async function Home() {
   return (
     <div className="flex flex-1 flex-col">
       {/* 1. Hero */}
-      <section className="border-b border-zinc-200 bg-gradient-to-b from-indigo-50 to-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-20 text-center sm:px-6">
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-            AI-powered learning
-          </span>
-          <h1 className="mt-5 max-w-3xl text-4xl font-bold text-zinc-900 sm:text-5xl">
-            Learn with a roadmap built specifically for you
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-zinc-600">
-            SkillPath AI helps you find the right course, enroll in minutes, and follow an
-            AI-generated study plan that adapts to your goals — no guesswork about what to learn next.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/explore"
-              className="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
-            >
-              Explore courses
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-md border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
-            >
-              Create free account
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel slides={HERO_SLIDES} />
 
       {/* 2. How it works */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -131,25 +140,37 @@ export default async function Home() {
 
       {/* 5. AI features highlight */}
       <section className="border-t border-zinc-200 bg-zinc-900">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="text-2xl font-bold text-white">Two AI features built into your account</h2>
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-6">
-              <Sparkles className="text-amber-400" size={24} />
-              <p className="mt-3 font-semibold text-white">AI Study Planner</p>
-              <p className="mt-2 text-sm text-zinc-300">
-                Share your goal, current skill level, weekly hours, and budget. The planner
-                generates a milestone-by-milestone roadmap built from real courses in the
-                catalog — and you can submit feedback to regenerate it as your plan evolves.
-              </p>
-            </div>
-            <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-6">
-              <Bot className="text-amber-400" size={24} />
-              <p className="mt-3 font-semibold text-white">Chat Assistant</p>
-              <p className="mt-2 text-sm text-zinc-300">
-                Ask questions in plain language — the assistant can search the course catalog
-                directly and recommend courses that match what you're asking for.
-              </p>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+            <Image
+              src={aiFeaturesImage}
+              alt="AI Study Planner and Chat Assistant guiding a learner's next step"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-white">Two AI features built into your account</h2>
+            <div className="mt-6 flex flex-col gap-5">
+              <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-6">
+                <Sparkles className="text-amber-400" size={24} />
+                <p className="mt-3 font-semibold text-white">AI Study Planner</p>
+                <p className="mt-2 text-sm text-zinc-300">
+                  Share your goal, current skill level, weekly hours, and budget. The planner
+                  generates a milestone-by-milestone roadmap built from real courses in the
+                  catalog — and you can submit feedback to regenerate it as your plan evolves.
+                </p>
+              </div>
+              <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-6">
+                <Bot className="text-amber-400" size={24} />
+                <p className="mt-3 font-semibold text-white">Chat Assistant</p>
+                <p className="mt-2 text-sm text-zinc-300">
+                  Ask questions in plain language — the assistant can search the course catalog
+                  directly and recommend courses that match what you're asking for.
+                </p>
+              </div>
             </div>
           </div>
         </div>

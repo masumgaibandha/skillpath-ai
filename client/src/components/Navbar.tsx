@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { BrandLogo } from "./BrandLogo";
 
 const LOGGED_OUT_LINKS = [
   { href: "/", label: "Home" },
@@ -43,8 +44,16 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="text-lg font-bold text-zinc-900">
-          SkillPath <span className="text-indigo-600">AI</span>
+        <Link href="/" className="flex items-center" aria-label="SkillPath AI — Home">
+          {/* Icon-only mark below sm: the horizontal wordmark is too wide for
+              the compact mobile header alongside the hamburger button. */}
+          <BrandLogo variant="icon" background="light" priority className="h-8 w-8 sm:hidden" />
+          <BrandLogo
+            variant="horizontal"
+            background="light"
+            priority
+            className="hidden h-8 w-auto sm:block"
+          />
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">

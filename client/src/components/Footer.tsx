@@ -1,5 +1,6 @@
 import { Code2, Mail } from "lucide-react";
 import Link from "next/link";
+import { BrandLogo } from "./BrandLogo";
 
 const SUPPORT_EMAIL = "masumgaibandha@gmail.com";
 const GITHUB_URL = "https://github.com/masumgaibandha/skillpath-ai";
@@ -9,10 +10,10 @@ export function Footer() {
     <footer className="border-t border-zinc-200 bg-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
         <div>
-          <p className="text-lg font-bold text-zinc-900">
-            SkillPath <span className="text-indigo-600">AI</span>
-          </p>
-          <p className="mt-2 max-w-xs text-sm text-zinc-500">
+          <Link href="/" aria-label="SkillPath AI — Home">
+            <BrandLogo variant="horizontal" background="light" className="h-8 w-auto" />
+          </Link>
+          <p className="mt-3 max-w-xs text-sm text-zinc-500">
             AI-powered course discovery and learning platform — browse real courses, enroll,
             and get a personalized study roadmap.
           </p>
