@@ -32,6 +32,11 @@ export const auth = betterAuth({
   trustedOrigins: [env.CLIENT_ORIGIN],
   emailAndPassword: {
     enabled: true,
+    // Registration must not create a session — the user is sent to /login
+    // to sign in explicitly after seeing a "account created" confirmation
+    // (see client/src/app/signup/page.tsx). Google OAuth is unaffected by
+    // this — it's a separate sign-in flow, not emailAndPassword.
+    autoSignIn: false,
   },
   // Enforced here regardless of what the client already checked — the
   // client's live checklist (client/src/lib/password.ts) is UX only, this

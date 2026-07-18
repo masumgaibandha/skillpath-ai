@@ -77,8 +77,12 @@ export default function SignupPage() {
       toast.danger(message);
       return;
     }
-    toast.success(`Welcome to SkillPath AI, ${name}!`);
-    router.push("/dashboard");
+
+    // autoSignIn is disabled server-side (server/src/lib/auth.ts) — signing
+    // up never establishes a session. Send the user to /login to sign in
+    // explicitly, carrying their email forward so they don't retype it.
+    toast.success("Account created successfully. Please log in.");
+    router.push(`/login?registered=true&email=${encodeURIComponent(email)}`);
   }
 
   async function handleGoogleSignIn() {
@@ -87,11 +91,8 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-zinc-50 px-4 py-16">
-      {/* Clean, minimal backdrop — a soft tonal wash, no image. */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-indigo-50/70 via-transparent to-transparent" />
-
-      <div className="relative w-full max-w-md rounded-2xl border border-zinc-200/70 bg-white/75 p-8 shadow-xl shadow-zinc-900/5 backdrop-blur-xl">
+    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 py-16">
+      <div className="w-full max-w-[480px] rounded-xl border border-zinc-200/80 bg-white/80 p-8 shadow-md shadow-zinc-900/5 backdrop-blur-sm">
         <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
         <p className="mt-1 text-sm text-zinc-500">Start learning with SkillPath AI, free.</p>
 
@@ -106,33 +107,31 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSignUp} className="mt-6 flex flex-col gap-5">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-              Name
-              <Input
-                type="text"
-                required
-                autoComplete="name"
-                placeholder="Ada Lovelace"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                fullWidth
-              />
-            </label>
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Name
+            <Input
+              type="text"
+              required
+              autoComplete="name"
+              placeholder="Ada Lovelace"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              fullWidth
+            />
+          </label>
 
-            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-              Email
-              <Input
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                fullWidth
-              />
-            </label>
-          </div>
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Email
+            <Input
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+            />
+          </label>
 
           <div className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <label htmlFor="signup-image" className="flex items-center gap-2">
@@ -140,7 +139,7 @@ export default function SignupPage() {
               <span className="text-xs font-normal text-zinc-400">Optional</span>
             </label>
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-zinc-100 shadow-sm ring-1 ring-zinc-200">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-zinc-100">
                 {imageProvided && imageUrlValid && !imageBroken ? (
                   // Arbitrary user-supplied URL from any host — next/image
                   // requires a fixed allowlist of remote hostnames, so a
@@ -155,7 +154,7 @@ export default function SignupPage() {
                     onLoad={() => setImageBroken(false)}
                   />
                 ) : (
-                  <User size={20} className="text-zinc-400" />
+                  <User size={18} className="text-zinc-400" />
                 )}
               </div>
               <Input
@@ -194,13 +193,13 @@ export default function SignupPage() {
           </label>
 
           {passwordTouched && (
-            <div className="-mt-2 flex flex-col gap-3 rounded-lg bg-zinc-50 p-3.5">
+            <div className="-mt-2.5 flex flex-col gap-2 rounded-lg bg-zinc-50 p-3">
               <div className="flex items-center gap-2">
                 <div className="flex flex-1 gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
-                      className={`h-1.5 flex-1 rounded-full transition-colors ${
+                      className={`h-1 flex-1 rounded-full transition-colors ${
                         i < metCount
                           ? metCount <= 2
                             ? "bg-amber-400"
@@ -216,7 +215,7 @@ export default function SignupPage() {
                   {STRENGTH_LABELS[metCount]}
                 </span>
               </div>
-              <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-1">
                 {PASSWORD_REQUIREMENTS.map((req) => {
                   const met = req.test(password);
                   return (
@@ -225,11 +224,11 @@ export default function SignupPage() {
                       className={`flex items-center gap-1.5 text-xs ${met ? "text-indigo-600" : "text-zinc-400"}`}
                     >
                       <span
-                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full ${
+                        className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full ${
                           met ? "bg-indigo-600 text-white" : "bg-zinc-200 text-zinc-400"
                         }`}
                       >
-                        {met ? <Check size={10} /> : <X size={10} />}
+                        {met ? <Check size={9} /> : <X size={9} />}
                       </span>
                       {req.label}
                     </li>
@@ -273,7 +272,7 @@ export default function SignupPage() {
           Continue with Google
         </Button>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-6 text-sm text-zinc-500">
           Already have an account?{" "}
           <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
             Log in
