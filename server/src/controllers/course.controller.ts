@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import Course from "../models/Course";
+import Course from "../models/Course.js";
 import {
   buildCourseFilter,
   buildCourseSort,
   courseQuerySchema,
   createCourseSchema,
-} from "../utils/courseQuery";
-import { generateUniqueSlug } from "../utils/slugify";
+} from "../utils/courseQuery.js";
+import { generateUniqueSlug } from "../utils/slugify.js";
 
 export async function listCourses(req: Request, res: Response) {
   const parsed = courseQuerySchema.safeParse(req.query);

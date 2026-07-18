@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
-import ContactMessage from "../models/ContactMessage";
+import ContactMessage from "../models/ContactMessage.js";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200),

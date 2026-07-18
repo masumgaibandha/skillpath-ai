@@ -1,6 +1,6 @@
 import type { FilterQuery, SortOrder } from "mongoose";
 import { z } from "zod";
-import { COURSE_LEVELS, type CourseAttrs } from "../models/Course";
+import { COURSE_LEVELS, type CourseAttrs } from "../models/Course.js";
 
 export const COURSE_SORTS = [
   "newest",

@@ -3,8 +3,8 @@ import {
   enrollFree,
   getEnrollmentStatus,
   listMyEnrollments,
-} from "../controllers/enrollment.controller";
-import { requireAuth } from "../middleware/requireAuth";
+} from "../controllers/enrollment.controller.js";
+import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
 

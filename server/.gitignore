@@ -8,3 +8,5 @@ dist/
 # env files — ignore local/secret values, but keep the example template tracked
 .env*
 !.env.example
+
+.vercel

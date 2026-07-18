@@ -2,8 +2,13 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    // better-auth ships ESM-only (no CJS "require" condition on any
+    // subpath it exports) — the server must compile to native ESM to
+    // import it directly. NodeNext requires explicit .js extensions on
+    // relative imports (resolved against the .ts source, not emitted
+    // output) — see every import in src/** and api/**.
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,

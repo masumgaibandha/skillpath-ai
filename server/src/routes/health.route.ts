@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDbStatus } from "../config/db";
+import { getDbStatus } from "../config/db.js";
 
 const router = Router();
 

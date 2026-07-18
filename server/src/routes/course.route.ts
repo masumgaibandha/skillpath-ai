@@ -5,8 +5,8 @@ import {
   getCourseBySlug,
   listCourses,
   listMyCourses,
-} from "../controllers/course.controller";
-import { requireAuth } from "../middleware/requireAuth";
+} from "../controllers/course.controller.js";
+import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
 

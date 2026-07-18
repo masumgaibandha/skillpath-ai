@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 export const stripeConfigured = Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);
 

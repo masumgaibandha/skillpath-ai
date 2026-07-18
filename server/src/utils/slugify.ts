@@ -1,4 +1,4 @@
-import Course from "../models/Course";
+import Course from "../models/Course.js";
 
 function slugify(title: string): string {
   return title

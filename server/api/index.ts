@@ -4,4 +4,4 @@
 // the app binding to a persistent socket. Local dev and traditional
 // `node dist/index.js` hosting still go through src/index.ts's
 // app.listen() path; this file is Vercel-only and never imported there.
-export { default } from "../src/app";
+export { default } from "../src/app.js";

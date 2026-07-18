@@ -1,16 +1,16 @@
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth";
-import { connectDB } from "./config/db";
-import { env } from "./config/env";
-import { stripeWebhook } from "./controllers/payment.controller";
-import contactRouter from "./routes/contact.route";
-import courseRouter from "./routes/course.route";
-import enrollmentRouter from "./routes/enrollment.route";
-import healthRouter from "./routes/health.route";
-import meRouter from "./routes/me.route";
-import paymentRouter from "./routes/payment.route";
+import { auth } from "./lib/auth.js";
+import { connectDB } from "./config/db.js";
+import { env } from "./config/env.js";
+import { stripeWebhook } from "./controllers/payment.controller.js";
+import contactRouter from "./routes/contact.route.js";
+import courseRouter from "./routes/course.route.js";
+import enrollmentRouter from "./routes/enrollment.route.js";
+import healthRouter from "./routes/health.route.js";
+import meRouter from "./routes/me.route.js";
+import paymentRouter from "./routes/payment.route.js";
 
 const app = express();
 

@@ -1,7 +1,7 @@
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 // A dedicated native MongoClient for Better Auth's own collections
 // (user/session/account/verification). Deliberately independent of the

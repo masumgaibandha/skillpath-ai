@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
-import Course from "../models/Course";
-import Enrollment from "../models/Enrollment";
+import Course from "../models/Course.js";
+import Enrollment from "../models/Enrollment.js";
 
 export async function enrollFree(req: Request, res: Response) {
   const { courseId } = req.params;

@@ -2,10 +2,10 @@ import type { Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
 import type Stripe from "stripe";
 import { z } from "zod";
-import { env } from "../config/env";
-import Course from "../models/Course";
-import Enrollment from "../models/Enrollment";
-import { stripe, stripeConfigured } from "../lib/stripe";
+import { env } from "../config/env.js";
+import Course from "../models/Course.js";
+import Enrollment from "../models/Enrollment.js";
+import { stripe, stripeConfigured } from "../lib/stripe.js";
 
 const checkoutSessionSchema = z.object({
   courseId: z.string().min(1, "courseId is required"),

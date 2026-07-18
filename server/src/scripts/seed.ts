@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { env } from "../config/env";
-import { seedCourses } from "../data/courses.seed-data";
-import Course from "../models/Course";
+import { env } from "../config/env.js";
+import { seedCourses } from "../data/courses.seed-data.js";
+import Course from "../models/Course.js";
 
 async function seed(): Promise<void> {
   await mongoose.connect(env.MONGODB_URI);

@@ -1,5 +1,5 @@
-import { auth } from "../lib/auth";
-import { env } from "../config/env";
+import { auth } from "../lib/auth.js";
+import { env } from "../config/env.js";
 
 /**
  * Creates the seeded demo account through Better Auth's own sign-up API
