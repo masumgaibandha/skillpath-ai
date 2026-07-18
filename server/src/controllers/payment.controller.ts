@@ -99,8 +99,23 @@ export async function createCheckoutSession(req: Request, res: Response) {
 }
 
 export async function stripeWebhook(req: Request, res: Response) {
-  if (!stripe || !env.STRIPE_WEBHOOK_SECRET) {
-    res.status(503).json({ error: "Stripe is not configured" });
+  // Deployable before Stripe is configured at all — this only rejects
+  // requests to the webhook itself, with a message that names exactly
+  // which env var is still missing, rather than a generic failure.
+  if (!stripe && !env.STRIPE_WEBHOOK_SECRET) {
+    res.status(503).json({
+      error: "Stripe webhook is not configured: set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET",
+    });
+    return;
+  }
+  if (!stripe) {
+    res.status(503).json({ error: "Stripe webhook is not configured: set STRIPE_SECRET_KEY" });
+    return;
+  }
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    res
+      .status(503)
+      .json({ error: "Stripe webhook is not configured: set STRIPE_WEBHOOK_SECRET" });
     return;
   }
 

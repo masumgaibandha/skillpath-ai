@@ -2,6 +2,7 @@ import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
+import { connectDB } from "./config/db";
 import { env } from "./config/env";
 import { stripeWebhook } from "./controllers/payment.controller";
 import contactRouter from "./routes/contact.route";
@@ -14,6 +15,19 @@ import paymentRouter from "./routes/payment.route";
 const app = express();
 
 app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
+
+// Serverless deployments have no long-running startup phase to connect to
+// MongoDB once and stay connected (that's src/index.ts's app.listen()
+// path, which only runs under traditional/local hosting) — each
+// invocation must ensure the connection itself. connectDB() is a cheap
+// no-op once already connected, so this doesn't add meaningful latency to
+// warm invocations or to local dev (already connected via index.ts at
+// boot). Runs before body parsing, so it never touches the raw request
+// stream the auth handler and Stripe webhook below depend on.
+app.use(async (_req, _res, next) => {
+  await connectDB(env.MONGODB_URI);
+  next();
+});
 
 // Better Auth's handler must be mounted BEFORE express.json() — it needs
 // the raw request stream (it parses the body itself), not one already

@@ -41,6 +41,35 @@ const envSchema = z.object({
     (v) => (v === "" ? undefined : v),
     z.string().min(1).optional()
   ),
+}).superRefine((data, ctx) => {
+  // CLIENT_ORIGIN's localhost default exists purely for local dev
+  // convenience. In production it must be explicitly set to the real
+  // deployed frontend's origin — no domain is hardcoded here, this just
+  // rejects the dev fallback and insecure schemes once NODE_ENV=production
+  // (which Vercel sets automatically for production deployments).
+  if (data.NODE_ENV !== "production") return;
+
+  let hostname: string | null = null;
+  try {
+    hostname = new URL(data.CLIENT_ORIGIN).hostname;
+  } catch {
+    // z.string().url() already reports unparseable URLs; nothing to add.
+  }
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["CLIENT_ORIGIN"],
+      message:
+        "CLIENT_ORIGIN must be set to the deployed frontend's real origin in production — it cannot fall back to localhost.",
+    });
+  }
+  if (!data.CLIENT_ORIGIN.startsWith("https://")) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["CLIENT_ORIGIN"],
+      message: "CLIENT_ORIGIN must use https:// in production.",
+    });
+  }
 });
 
 const parsed = envSchema.safeParse(process.env);
