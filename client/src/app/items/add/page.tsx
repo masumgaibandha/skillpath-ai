@@ -26,6 +26,15 @@ function tagsToArray(value: string): string[] {
     .filter(Boolean);
 }
 
+function SectionHeading({ title, description }: { title: string; description?: string }) {
+  return (
+    <div>
+      <h2 className="text-sm font-semibold tracking-wide text-zinc-900">{title}</h2>
+      {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
+    </div>
+  );
+}
+
 export default function AddCoursePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -118,7 +127,7 @@ export default function AddCoursePage() {
   if (createdCourse) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-        <div className="flex flex-col items-center rounded-xl border border-zinc-200 bg-white p-10 text-center">
+        <div className="flex flex-col items-center rounded-2xl border border-zinc-200 bg-white p-10 text-center shadow-sm">
           <CheckCircle2 className="text-indigo-600" size={40} />
           <p className="mt-4 text-lg font-semibold text-zinc-900">Course created</p>
           <p className="mt-1 text-zinc-500">
@@ -147,7 +156,7 @@ export default function AddCoursePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold text-zinc-900">Add a course</h1>
       <p className="mt-1 text-zinc-500">
         Published immediately to the public catalog — you can delete it later from{" "}
@@ -176,158 +185,215 @@ export default function AddCoursePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Title
-          <Input type="text" required value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
-        </label>
-
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Short description
-          <TextArea
-            required
-            rows={2}
-            value={shortDescription}
-            onChange={(e) => setShortDescription(e.target.value)}
-            placeholder="1-2 sentences shown on course cards"
-            fullWidth
+      <form
+        onSubmit={handleSubmit}
+        className="mt-8 flex flex-col gap-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+      >
+        <div className="flex flex-col gap-5">
+          <SectionHeading
+            title="Basic information"
+            description="Shown at the top of the course card and detail page."
           />
-        </label>
-
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Full description
-          <TextArea
-            required
-            rows={6}
-            value={fullDescription}
-            onChange={(e) => setFullDescription(e.target.value)}
-            placeholder="Longer overview shown on the course detail page"
-            fullWidth
-          />
-        </label>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Category
-            <select
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700"
-            >
-              <option value="" disabled>
-                Select a category
-              </option>
-              {COURSE_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Level
-            <select
-              required
-              value={level}
-              onChange={(e) => setLevel(e.target.value as CourseLevel)}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700"
-            >
-              <option value="" disabled>
-                Select a level
-              </option>
-              {COURSE_LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {l[0]!.toUpperCase() + l.slice(1)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Price (USD, 0 = free)
+            Title
             <Input
-              type="number"
+              type="text"
               required
-              min={0}
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               fullWidth
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Duration (hours)
-            <Input
-              type="number"
+            Short description
+            <TextArea
               required
-              min={0}
-              step="0.5"
-              value={durationHours}
-              onChange={(e) => setDurationHours(e.target.value)}
+              rows={2}
+              value={shortDescription}
+              onChange={(e) => setShortDescription(e.target.value)}
+              placeholder="1-2 sentences shown on course cards"
               fullWidth
             />
+            <span className="text-xs font-normal text-zinc-400">
+              Keep it brief — this appears on every course card in Explore.
+            </span>
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Full description
+            <TextArea
+              required
+              rows={6}
+              value={fullDescription}
+              onChange={(e) => setFullDescription(e.target.value)}
+              placeholder="Longer overview shown on the course detail page"
+              fullWidth
+            />
+            <span className="text-xs font-normal text-zinc-400">
+              The full overview shown on the course&apos;s own page — can be as detailed as you
+              like.
+            </span>
           </label>
         </div>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Instructor name
-          <Input
-            type="text"
-            required
-            value={instructorName}
-            onChange={(e) => setInstructorName(e.target.value)}
-            fullWidth
+        <div className="flex flex-col gap-5 border-t border-zinc-100 pt-8">
+          <SectionHeading
+            title="Classification & pricing"
+            description="Powers Explore's category/level/price filters."
           />
-        </label>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Category
+              <select
+                required
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {COURSE_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Tags (comma-separated)
-          <Input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="react, frontend, javascript"
-            fullWidth
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Level
+              <select
+                required
+                value={level}
+                onChange={(e) => setLevel(e.target.value as CourseLevel)}
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700"
+              >
+                <option value="" disabled>
+                  Select a level
+                </option>
+                {COURSE_LEVELS.map((l) => (
+                  <option key={l} value={l}>
+                    {l[0]!.toUpperCase() + l.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Price (USD)
+              <Input
+                type="number"
+                required
+                min={0}
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                fullWidth
+              />
+              <span className="text-xs font-normal text-zinc-400">Enter 0 for a free course.</span>
+            </label>
+
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Duration (hours)
+              <Input
+                type="number"
+                required
+                min={0}
+                step="0.5"
+                value={durationHours}
+                onChange={(e) => setDurationHours(e.target.value)}
+                fullWidth
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-5 border-t border-zinc-100 pt-8">
+          <SectionHeading title="Instructor & tags" />
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Instructor name
+            <Input
+              type="text"
+              required
+              value={instructorName}
+              onChange={(e) => setInstructorName(e.target.value)}
+              fullWidth
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Tags
+            <Input
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="react, frontend, javascript"
+              fullWidth
+            />
+            <span className="text-xs font-normal text-zinc-400">
+              Comma-separated. Used for search and related-course matching.
+            </span>
+          </label>
+        </div>
+
+        <div className="flex flex-col gap-5 border-t border-zinc-100 pt-8">
+          <SectionHeading
+            title="Course content"
+            description="Optional — shown as checklists on the course detail page."
           />
-        </label>
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            What you&apos;ll learn
+            <TextArea
+              rows={4}
+              value={whatYoullLearn}
+              onChange={(e) => setWhatYoullLearn(e.target.value)}
+              placeholder={"Build a REST API with Express\nDeploy to production"}
+              fullWidth
+            />
+            <span className="text-xs font-normal text-zinc-400">One outcome per line.</span>
+          </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          What you&apos;ll learn (one per line)
-          <TextArea
-            rows={4}
-            value={whatYoullLearn}
-            onChange={(e) => setWhatYoullLearn(e.target.value)}
-            fullWidth
-          />
-        </label>
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Prerequisites
+            <TextArea
+              rows={3}
+              value={prerequisites}
+              onChange={(e) => setPrerequisites(e.target.value)}
+              placeholder={"Basic JavaScript\nComfortable with the command line"}
+              fullWidth
+            />
+            <span className="text-xs font-normal text-zinc-400">One prerequisite per line.</span>
+          </label>
+        </div>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Prerequisites (one per line)
-          <TextArea
-            rows={3}
-            value={prerequisites}
-            onChange={(e) => setPrerequisites(e.target.value)}
-            fullWidth
-          />
-        </label>
+        <div className="flex flex-col gap-5 border-t border-zinc-100 pt-8">
+          <SectionHeading title="Media" description="2–4 images, used for the card and gallery." />
+          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            Image URLs
+            <TextArea
+              required
+              rows={3}
+              value={images}
+              onChange={(e) => setImages(e.target.value)}
+              placeholder={"https://images.unsplash.com/...\nhttps://images.unsplash.com/..."}
+              fullWidth
+            />
+            <span className="text-xs font-normal text-zinc-400">
+              One URL per line — the first becomes the cover image.
+            </span>
+            {imagesError && <span className="text-sm text-red-600">{imagesError}</span>}
+          </label>
+        </div>
 
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-          Image URLs (one per line, 2–4 required)
-          <TextArea
-            required
-            rows={3}
-            value={images}
-            onChange={(e) => setImages(e.target.value)}
-            placeholder={"https://images.unsplash.com/...\nhttps://images.unsplash.com/..."}
-            fullWidth
-          />
-          {imagesError && <span className="text-sm text-red-600">{imagesError}</span>}
-        </label>
-
-        <Button type="submit" variant="primary" isDisabled={createCourse.isPending} fullWidth>
+        <Button
+          type="submit"
+          variant="primary"
+          isDisabled={createCourse.isPending}
+          fullWidth
+          className="mt-2"
+        >
           {createCourse.isPending ? "Creating…" : "Create course"}
         </Button>
       </form>

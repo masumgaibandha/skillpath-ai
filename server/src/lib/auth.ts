@@ -1,7 +1,9 @@
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
+import { createAuthMiddleware } from "better-auth/api";
 import { MongoClient } from "mongodb";
 import { env } from "../config/env.js";
+import { isStrongPassword, PASSWORD_REQUIREMENTS_MESSAGE } from "../utils/password.js";
 
 // A dedicated native MongoClient for Better Auth's own collections
 // (user/session/account/verification). Deliberately independent of the
@@ -30,6 +32,26 @@ export const auth = betterAuth({
   trustedOrigins: [env.CLIENT_ORIGIN],
   emailAndPassword: {
     enabled: true,
+  },
+  // Enforced here regardless of what the client already checked — the
+  // client's live checklist (client/src/lib/password.ts) is UX only, this
+  // is the actual security boundary. Runs on sign-up and on password
+  // reset/change, both of which set a new password via ctx.body.password.
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      const password = (ctx.body as { password?: unknown } | undefined)?.password;
+      if (typeof password !== "string") return;
+
+      const isPasswordPath =
+        ctx.path === "/sign-up/email" ||
+        ctx.path === "/reset-password" ||
+        ctx.path === "/change-password";
+      if (!isPasswordPath) return;
+
+      if (!isStrongPassword(password)) {
+        throw new APIError("BAD_REQUEST", { message: PASSWORD_REQUIREMENTS_MESSAGE });
+      }
+    }),
   },
   ...(googleConfigured
     ? {

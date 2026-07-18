@@ -18,6 +18,14 @@ export class ApiError extends Error {
   }
 }
 
+/** Best-effort human-readable message from any thrown value — an ApiError's
+ * server-supplied message, a plain Error's message, or a generic fallback. */
+export function getErrorMessage(error: unknown, fallback = "Something went wrong. Please try again."): string {
+  if (error instanceof ApiError) return error.message;
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
+
 /** For Server Components / Server-side fetches only. */
 export async function fetchServerApi<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${SERVER_API_URL}${path}`, { ...init, cache: "no-store" });

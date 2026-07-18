@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Button } from "@heroui/react";
+import { Avatar, Button, toast } from "@heroui/react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,6 +37,7 @@ export function Navbar() {
   async function handleLogout() {
     await authClient.signOut();
     setIsMobileOpen(false);
+    toast.success("Logged out");
     router.push("/");
     router.refresh();
   }
@@ -76,6 +77,12 @@ export function Navbar() {
           {isPending ? null : isLoggedIn ? (
             <div className="flex items-center gap-3">
               <Avatar size="sm">
+                {/* Radix's Avatar.Image unmounts itself on load error, so
+                    Avatar.Fallback shows through automatically — covers
+                    both a missing image and a broken/dead URL. */}
+                {session!.user.image && (
+                  <Avatar.Image src={session!.user.image} alt={session!.user.name ?? "Profile"} />
+                )}
                 <Avatar.Fallback>
                   {(session!.user.name || session!.user.email || "U")[0]!.toUpperCase()}
                 </Avatar.Fallback>
@@ -129,9 +136,27 @@ export function Navbar() {
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-zinc-200 pt-3">
               {isPending ? null : isLoggedIn ? (
-                <Button variant="outline" size="sm" onPress={handleLogout}>
-                  Log out
-                </Button>
+                <>
+                  <div className="flex items-center gap-3 px-3 py-1">
+                    <Avatar size="sm">
+                      {session!.user.image && (
+                        <Avatar.Image
+                          src={session!.user.image}
+                          alt={session!.user.name ?? "Profile"}
+                        />
+                      )}
+                      <Avatar.Fallback>
+                        {(session!.user.name || session!.user.email || "U")[0]!.toUpperCase()}
+                      </Avatar.Fallback>
+                    </Avatar>
+                    <span className="truncate text-sm font-medium text-zinc-700">
+                      {session!.user.name || session!.user.email}
+                    </span>
+                  </div>
+                  <Button variant="outline" size="sm" onPress={handleLogout}>
+                    Log out
+                  </Button>
+                </>
               ) : (
                 <>
                   <Link href="/login" onClick={() => setIsMobileOpen(false)}>

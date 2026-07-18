@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input } from "@heroui/react";
+import { Button, Input, toast } from "@heroui/react";
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,9 +26,12 @@ export default function LoginPage() {
 
     setIsSubmitting(false);
     if (signInError) {
-      setError(signInError.message ?? "Invalid email or password.");
+      const message = signInError.message ?? "Invalid email or password.";
+      setError(message);
+      toast.danger(message);
       return;
     }
+    toast.success("Welcome back!");
     router.push("/dashboard");
   }
 
@@ -47,9 +50,12 @@ export default function LoginPage() {
 
     setIsSubmitting(false);
     if (signInError) {
-      setError(signInError.message ?? "Demo login failed.");
+      const message = signInError.message ?? "Demo login failed.";
+      setError(message);
+      toast.danger(message);
       return;
     }
+    toast.success("Signed in with the demo account");
     router.push("/dashboard");
   }
 
@@ -69,7 +75,7 @@ export default function LoginPage() {
             role="alert"
             className="mt-5 flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-700"
           >
-            <TriangleAlert size={16} />
+            <TriangleAlert size={16} className="shrink-0" />
             {error}
           </p>
         )}
@@ -116,6 +122,9 @@ export default function LoginPage() {
             Continue with Google
           </Button>
         </div>
+        <p className="mt-2 text-center text-xs text-zinc-400">
+          Demo Login fills in the seeded demo account&apos;s credentials above before signing in.
+        </p>
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           No account?{" "}

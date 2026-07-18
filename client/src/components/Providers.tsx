@@ -1,5 +1,6 @@
 "use client";
 
+import { Toast } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -19,5 +20,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      {/* Single global toast queue — call toast.success/.danger/etc. from
+          anywhere (hooks, pages) via `import { toast } from "@heroui/react"`,
+          no per-page setup needed. */}
+      <Toast.Provider placement="top end" />
+    </QueryClientProvider>
+  );
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, Input, TextArea } from "@heroui/react";
+import { Button, Input, TextArea, toast } from "@heroui/react";
 import { CheckCircle2, Mail, TriangleAlert } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { fetchClientApi } from "@/lib/api";
+import { fetchClientApi, getErrorMessage } from "@/lib/api";
 
 const SUPPORT_EMAIL = "masumgaibandha@gmail.com";
 
@@ -29,9 +29,12 @@ export default function ContactPage() {
       setName("");
       setEmail("");
       setMessage("");
-    } catch {
+      toast.success("Message sent — we'll get back to you by email.");
+    } catch (err) {
       setStatus("error");
-      setError("Something went wrong sending your message. Please try again.");
+      const message = getErrorMessage(err, "Something went wrong sending your message. Please try again.");
+      setError(message);
+      toast.danger(message);
     }
   }
 

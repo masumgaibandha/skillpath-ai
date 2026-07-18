@@ -1,7 +1,8 @@
 "use client";
 
+import { toast } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchClientApi } from "@/lib/api";
+import { fetchClientApi, getErrorMessage } from "@/lib/api";
 
 export function useDeleteCourse() {
   const queryClient = useQueryClient();
@@ -11,6 +12,10 @@ export function useDeleteCourse() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-courses"] });
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+      toast.success("Course deleted");
+    },
+    onError: (error) => {
+      toast.danger(getErrorMessage(error, "Couldn't delete the course."));
     },
   });
 }

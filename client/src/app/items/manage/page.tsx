@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, EmptyState, Modal, useOverlayState } from "@heroui/react";
-import { PlusCircle, TriangleAlert } from "lucide-react";
+import { Button, Chip, EmptyState, Modal, useOverlayState } from "@heroui/react";
+import { BookOpen, PlusCircle, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,13 +20,17 @@ const LEVEL_LABEL: Record<Course["level"], string> = {
 
 function CourseRowSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col gap-4 rounded-xl border border-zinc-200 p-4 sm:flex-row sm:items-center">
-      <div className="h-20 w-full shrink-0 rounded-lg bg-zinc-100 sm:w-32" />
+    <div className="flex animate-pulse flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-4 sm:flex-row sm:items-center">
+      <div className="h-24 w-full shrink-0 rounded-lg bg-zinc-100 sm:h-20 sm:w-32" />
       <div className="flex-1 space-y-2">
+        <div className="h-3 w-16 rounded-full bg-zinc-100" />
         <div className="h-4 w-2/3 rounded bg-zinc-100" />
         <div className="h-3 w-1/3 rounded bg-zinc-100" />
       </div>
-      <div className="h-9 w-40 shrink-0 rounded-md bg-zinc-100" />
+      <div className="flex shrink-0 gap-2">
+        <div className="h-9 w-20 rounded-md bg-zinc-100" />
+        <div className="h-9 w-20 rounded-md bg-zinc-100" />
+      </div>
     </div>
   );
 }
@@ -63,12 +67,18 @@ export default function ManageCoursesPage() {
     return null;
   }
 
+  const count = data?.items.length ?? 0;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-zinc-900">My courses</h1>
-          <p className="mt-1 text-zinc-500">Courses you've added to the catalog.</p>
+          <p className="mt-1 text-zinc-500">
+            {isLoading
+              ? "Courses you've added to the catalog."
+              : `${count} ${count === 1 ? "course" : "courses"} you've added to the catalog.`}
+          </p>
         </div>
         <Link
           href="/items/add"
@@ -99,9 +109,9 @@ export default function ManageCoursesPage() {
           data.items.map((course) => (
             <div
               key={course._id}
-              className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-4 sm:flex-row sm:items-center"
+              className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center"
             >
-              <div className="relative h-20 w-full shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:w-32">
+              <div className="relative h-24 w-full shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:h-20 sm:w-32">
                 <Image
                   src={course.images[0]!}
                   alt={course.title}
@@ -112,21 +122,32 @@ export default function ManageCoursesPage() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-zinc-900">{course.title}</p>
-                <p className="mt-1 text-sm text-zinc-500">
-                  {LEVEL_LABEL[course.level]} · {course.category} ·{" "}
-                  {course.isFree ? "Free" : `$${course.price.toFixed(2)}`}
+                <div className="flex items-center gap-2">
+                  <Chip size="sm" variant="soft" color="default">
+                    {LEVEL_LABEL[course.level]}
+                  </Chip>
+                  <span className="truncate text-xs text-zinc-500">{course.category}</span>
+                </div>
+                <p className="mt-1.5 truncate font-semibold text-zinc-900">{course.title}</p>
+                <p className="mt-0.5 text-sm text-zinc-500">
+                  {course.isFree ? "Free" : `$${course.price.toFixed(2)}`} ·{" "}
+                  {course.durationHours}h
                 </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 gap-2">
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+                  className="flex-1 rounded-md border border-zinc-300 px-3 py-1.5 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 sm:flex-none"
                 >
                   View
                 </Link>
-                <Button variant="danger-soft" size="sm" onPress={() => requestDelete(course)}>
+                <Button
+                  variant="danger-soft"
+                  size="sm"
+                  className="flex-1 sm:flex-none"
+                  onPress={() => requestDelete(course)}
+                >
                   Delete
                 </Button>
               </div>
@@ -134,7 +155,8 @@ export default function ManageCoursesPage() {
           ))
         ) : (
           <EmptyState>
-            <p className="font-medium text-zinc-900">You haven&apos;t added any courses yet</p>
+            <BookOpen size={32} className="text-zinc-400" />
+            <p className="mt-3 font-medium text-zinc-900">You haven&apos;t added any courses yet</p>
             <p className="mt-1 text-sm text-zinc-500">
               Create your first course to see it listed here.
             </p>
@@ -156,9 +178,25 @@ export default function ManageCoursesPage() {
                 <Modal.Heading>Delete course?</Modal.Heading>
               </Modal.Header>
               <Modal.Body>
-                <p className="text-sm text-zinc-600">
-                  This will permanently remove &ldquo;{targetCourse?.title}&rdquo; from the
-                  catalog. This can&apos;t be undone.
+                {targetCourse && (
+                  <div className="flex items-center gap-3 rounded-lg bg-zinc-50 p-3">
+                    <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-md bg-zinc-200">
+                      <Image
+                        src={targetCourse.images[0]!}
+                        alt={targetCourse.title}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <p className="truncate text-sm font-medium text-zinc-900">
+                      {targetCourse.title}
+                    </p>
+                  </div>
+                )}
+                <p className="mt-3 text-sm text-zinc-600">
+                  This will permanently remove this course from the catalog. This can&apos;t be
+                  undone.
                 </p>
                 {deleteCourse.isError && (
                   <p className="mt-3 flex items-center gap-2 rounded-md bg-red-50 p-3 text-sm text-red-700">

@@ -3,7 +3,6 @@
 import { Button } from "@heroui/react";
 import { CheckCircle2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { ApiError } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import type { Course } from "@/lib/types";
 import { useCheckoutSession } from "@/hooks/useCheckoutSession";
@@ -70,46 +69,29 @@ export function EnrollAction({ course }: { course: Course }) {
   }
 
   if (course.isFree) {
+    // freeEnroll's onError already fires a toast (see hooks/useFreeEnroll)
+    // — no need to duplicate that message inline here too.
     return (
-      <div>
-        <Button
-          variant="primary"
-          fullWidth
-          isDisabled={freeEnroll.isPending}
-          onPress={() => freeEnroll.mutate()}
-        >
-          {freeEnroll.isPending ? "Enrolling…" : "Enroll for free"}
-        </Button>
-        {freeEnroll.isError && (
-          <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-sm text-red-600">
-            <TriangleAlert size={14} />
-            {freeEnroll.error instanceof ApiError
-              ? freeEnroll.error.message
-              : "Something went wrong. Please try again."}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div>
       <Button
         variant="primary"
         fullWidth
-        isDisabled={checkout.isPending}
-        onPress={() => checkout.mutate(course._id)}
+        isDisabled={freeEnroll.isPending}
+        onPress={() => freeEnroll.mutate()}
       >
-        {checkout.isPending ? "Redirecting to checkout…" : `Buy course — $${course.price.toFixed(2)}`}
+        {freeEnroll.isPending ? "Enrolling…" : "Enroll for free"}
       </Button>
-      {checkout.isError && (
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-sm text-red-600">
-          <TriangleAlert size={14} />
-          {checkout.error instanceof ApiError
-            ? checkout.error.message
-            : "Something went wrong. Please try again."}
-        </p>
-      )}
-    </div>
+    );
+  }
+
+  // checkout's onError already fires a toast (see hooks/useCheckoutSession).
+  return (
+    <Button
+      variant="primary"
+      fullWidth
+      isDisabled={checkout.isPending}
+      onPress={() => checkout.mutate(course._id)}
+    >
+      {checkout.isPending ? "Redirecting to checkout…" : `Buy course — $${course.price.toFixed(2)}`}
+    </Button>
   );
 }
