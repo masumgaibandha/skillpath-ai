@@ -51,6 +51,29 @@ export function buildCourseFilter(query: CourseQuery): FilterQuery<CourseAttrs> 
   return filter;
 }
 
+// Deliberately excludes createdBy, slug, isFree, status, rating, ratingCount
+// — those are server-controlled (set from the session or derived), never
+// accepted from the client even if present in the request body.
+export const createCourseSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(200),
+  shortDescription: z.string().trim().min(1, "Short description is required").max(500),
+  fullDescription: z.string().trim().min(1, "Full description is required").max(5000),
+  whatYoullLearn: z.array(z.string().trim().min(1)).default([]),
+  prerequisites: z.array(z.string().trim().min(1)).default([]),
+  category: z.string().trim().min(1, "Category is required"),
+  tags: z.array(z.string().trim().min(1)).default([]),
+  level: z.enum(COURSE_LEVELS),
+  price: z.coerce.number().min(0, "Price must be 0 or more"),
+  instructorName: z.string().trim().min(1, "Instructor name is required").max(200),
+  images: z
+    .array(z.string().trim().url("Each image must be a valid URL"))
+    .min(2, "At least 2 images are required")
+    .max(4, "At most 4 images are allowed"),
+  durationHours: z.coerce.number().min(0, "Duration must be 0 or more"),
+});
+
+export type CreateCourseInput = z.infer<typeof createCourseSchema>;
+
 export function buildCourseSort(
   sort: CourseQuery["sort"]
 ): Record<string, SortOrder> {

@@ -55,3 +55,25 @@ export interface CourseQueryParams {
   isFree?: boolean;
   sort?: CourseSort;
 }
+
+// Mirrors server's createCourseSchema (server/src/utils/courseQuery.ts).
+// createdBy/slug/isFree/status/rating/ratingCount are server-controlled and
+// deliberately excluded — the client never sends them.
+export interface CreateCourseInput {
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  whatYoullLearn: string[];
+  prerequisites: string[];
+  category: string;
+  tags: string[];
+  level: CourseLevel;
+  price: number;
+  instructorName: string;
+  images: string[];
+  durationHours: number;
+}
+
+export interface MyCoursesResponse {
+  items: Course[];
+}
