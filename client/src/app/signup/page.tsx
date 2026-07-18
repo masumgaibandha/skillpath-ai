@@ -1,13 +1,22 @@
 "use client";
 
 import { Button, Input, toast } from "@heroui/react";
-import { Check, TriangleAlert, User, X } from "lucide-react";
+import { Check, GraduationCap, ShieldCheck, Sparkles, TriangleAlert, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { getErrorMessage } from "@/lib/api";
+import heroImage from "@/assets/hero-learn-grow.webp";
 import { authClient } from "@/lib/auth-client";
 import { PASSWORD_REQUIREMENTS, isStrongPassword } from "@/lib/password";
+import { AuthSplitLayout, type AuthBenefit } from "@/components/AuthSplitLayout";
+import { GoogleIcon } from "@/components/GoogleIcon";
+import { PasswordInput } from "@/components/PasswordInput";
+
+const BENEFITS: AuthBenefit[] = [
+  { icon: Sparkles, text: "Get a personalized AI study roadmap in minutes" },
+  { icon: GraduationCap, text: "Own and manage your own courses — no gatekeeping" },
+  { icon: ShieldCheck, text: "Free to join — enroll in free courses instantly" },
+];
 
 function isValidImageUrl(value: string): boolean {
   try {
@@ -17,6 +26,8 @@ function isValidImageUrl(value: string): boolean {
     return false;
   }
 }
+
+const STRENGTH_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 
 export default function SignupPage() {
   const router = useRouter();
@@ -34,6 +45,7 @@ export default function SignupPage() {
   const passwordsMatch = password === confirmPassword;
   const imageProvided = imageUrl.trim().length > 0;
   const imageUrlValid = !imageProvided || isValidImageUrl(imageUrl.trim());
+  const metCount = PASSWORD_REQUIREMENTS.filter((req) => req.test(password)).length;
 
   async function handleSignUp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,8 +95,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+    <AuthSplitLayout
+      image={heroImage}
+      headline="Build skills that actually move you forward"
+      description="Create a free account to get an AI-generated study plan, enroll in real courses, and track your progress."
+      benefits={BENEFITS}
+    >
+      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm shadow-zinc-200/50">
         <h1 className="text-2xl font-bold text-zinc-900">Create your account</h1>
         <p className="mt-1 text-sm text-zinc-500">Start learning with SkillPath AI, free.</p>
 
@@ -99,29 +116,33 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSignUp} className="mt-6 flex flex-col gap-5">
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Name
-            <Input
-              type="text"
-              required
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              fullWidth
-            />
-          </label>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Name
+              <Input
+                type="text"
+                required
+                autoComplete="name"
+                placeholder="Ada Lovelace"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                fullWidth
+              />
+            </label>
 
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            Email
-            <Input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              fullWidth
-            />
-          </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+              Email
+              <Input
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+              />
+            </label>
+          </div>
 
           <div className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <label htmlFor="signup-image" className="flex items-center gap-2">
@@ -129,7 +150,7 @@ export default function SignupPage() {
               <span className="text-xs font-normal text-zinc-400">Optional</span>
             </label>
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-zinc-100">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-zinc-100 shadow-sm ring-1 ring-zinc-200">
                 {imageProvided && imageUrlValid && !imageBroken ? (
                   // Arbitrary user-supplied URL from any host — next/image
                   // requires a fixed allowlist of remote hostnames, so a
@@ -144,7 +165,7 @@ export default function SignupPage() {
                     onLoad={() => setImageBroken(false)}
                   />
                 ) : (
-                  <User size={18} className="text-zinc-400" />
+                  <User size={20} className="text-zinc-400" />
                 )}
               </div>
               <Input
@@ -174,42 +195,67 @@ export default function SignupPage() {
 
           <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             Password
-            <Input
-              type="password"
+            <PasswordInput
               required
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              fullWidth
+              onChange={setPassword}
             />
           </label>
 
           {passwordTouched && (
-            <ul className="-mt-3 grid grid-cols-1 gap-1 rounded-md bg-zinc-50 p-3 sm:grid-cols-2">
-              {PASSWORD_REQUIREMENTS.map((req) => {
-                const met = req.test(password);
-                return (
-                  <li
-                    key={req.id}
-                    className={`flex items-center gap-1.5 text-xs ${met ? "text-indigo-600" : "text-zinc-400"}`}
-                  >
-                    {met ? <Check size={14} /> : <X size={14} />}
-                    {req.label}
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="-mt-2 flex flex-col gap-3 rounded-lg bg-zinc-50 p-3.5">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-1 gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 flex-1 rounded-full transition-colors ${
+                        i < metCount
+                          ? metCount <= 2
+                            ? "bg-amber-400"
+                            : "bg-indigo-600"
+                          : "bg-zinc-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span
+                  className={`text-xs font-medium ${metCount <= 2 ? "text-amber-600" : "text-indigo-600"}`}
+                >
+                  {STRENGTH_LABELS[metCount]}
+                </span>
+              </div>
+              <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                {PASSWORD_REQUIREMENTS.map((req) => {
+                  const met = req.test(password);
+                  return (
+                    <li
+                      key={req.id}
+                      className={`flex items-center gap-1.5 text-xs ${met ? "text-indigo-600" : "text-zinc-400"}`}
+                    >
+                      <span
+                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full ${
+                          met ? "bg-indigo-600 text-white" : "bg-zinc-200 text-zinc-400"
+                        }`}
+                      >
+                        {met ? <Check size={10} /> : <X size={10} />}
+                      </span>
+                      {req.label}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           )}
 
           <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             Confirm password
-            <Input
-              type="password"
+            <PasswordInput
               required
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              fullWidth
+              onChange={setConfirmPassword}
             />
             {confirmTouched && (
               <span
@@ -221,18 +267,19 @@ export default function SignupPage() {
             )}
           </label>
 
-          <Button type="submit" variant="primary" isDisabled={isSubmitting} fullWidth>
+          <Button type="submit" variant="primary" isDisabled={isSubmitting} fullWidth className="mt-1">
             {isSubmitting ? "Creating account…" : "Sign up"}
           </Button>
         </form>
 
-        <div className="mt-4 flex items-center gap-3 text-xs text-zinc-400">
+        <div className="mt-5 flex items-center gap-3 text-xs font-medium text-zinc-400">
           <div className="h-px flex-1 bg-zinc-200" />
-          or
+          OR CONTINUE WITH
           <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
-        <Button variant="outline" fullWidth className="mt-4" onPress={handleGoogleSignIn}>
+        <Button variant="outline" fullWidth className="mt-5" onPress={handleGoogleSignIn}>
+          <GoogleIcon size={16} />
           Continue with Google
         </Button>
 
@@ -243,6 +290,6 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthSplitLayout>
   );
 }
