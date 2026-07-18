@@ -1,7 +1,7 @@
 import { Card, Chip, Skeleton } from "@heroui/react";
 import { Clock, Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { CourseImage } from "@/components/CourseImage";
 import type { Course } from "@/lib/types";
 
 const LEVEL_LABEL: Record<Course["level"], string> = {
@@ -14,13 +14,7 @@ export function CourseCard({ course }: { course: Course }) {
   return (
     <Card.Root className="flex h-full flex-col gap-0 overflow-hidden p-0">
       <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-zinc-100">
-        <Image
-          src={course.images[0]!}
-          alt={course.title}
-          fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover"
-        />
+        <CourseImage src={course.images[0]!} alt={course.title} />
       </div>
 
       <Card.Content className="flex flex-1 flex-col gap-2 p-4">

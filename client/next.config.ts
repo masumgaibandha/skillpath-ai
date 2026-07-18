@@ -9,9 +9,13 @@ const API_URL = process.env.API_URL ?? "http://localhost:5000";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  images: {
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
-  },
+  // No remotePatterns: every next/image usage in this app is a local
+  // static asset (StaticImageData imports — BrandLogo, HeroCarousel, the
+  // landing/about page images). Course images are user-submitted URLs of
+  // arbitrary, unpredictable hosts, so they're deliberately never passed
+  // to next/image (which requires a fixed remote-host allowlist) — see
+  // components/CourseImage.tsx, which renders them as a validated plain
+  // <img> with a broken-image fallback instead.
   async rewrites() {
     return [
       {

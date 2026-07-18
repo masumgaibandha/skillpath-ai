@@ -94,15 +94,23 @@ export function Navbar() {
             </div>
           ) : (
             <>
-              <Link href="/login">
-                <Button variant="outline" size="sm">
-                  Log in
-                </Button>
+              {/* Plain styled Links, not <Link><Button/></Link> — nesting a
+                  React Aria pressable Button inside next/link's Link
+                  renders a <button> inside an <a> and triggers React
+                  Aria's "PressResponder rendered without a pressable
+                  child" warning, since Button can't attach its press
+                  handling to a DOM node Link already owns. */}
+              <Link
+                href="/login"
+                className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Log in
               </Link>
-              <Link href="/signup">
-                <Button variant="primary" size="sm">
-                  Sign up
-                </Button>
+              <Link
+                href="/signup"
+                className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+              >
+                Sign up
               </Link>
             </>
           )}
@@ -160,15 +168,19 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setIsMobileOpen(false)}>
-                    <Button variant="outline" size="sm" fullWidth>
-                      Log in
-                    </Button>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="rounded-md border border-zinc-300 px-3 py-1.5 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+                  >
+                    Log in
                   </Link>
-                  <Link href="/signup" onClick={() => setIsMobileOpen(false)}>
-                    <Button variant="primary" size="sm" fullWidth>
-                      Sign up
-                    </Button>
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-indigo-700"
+                  >
+                    Sign up
                   </Link>
                 </>
               )}

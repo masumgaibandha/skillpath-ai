@@ -1,9 +1,9 @@
 import { Chip } from "@heroui/react";
 import { BookOpen, Check, Clock, Star, User } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CourseCard } from "@/components/CourseCard";
+import { CourseImage } from "@/components/CourseImage";
 import { EnrollAction } from "@/components/EnrollAction";
 import type { CourseDetailResponse } from "@/lib/types";
 
@@ -82,14 +82,7 @@ export default async function CourseDetailPage({
               i === 0 ? "col-span-2 row-span-2 sm:col-span-2 sm:row-span-2" : ""
             }`}
           >
-            <Image
-              src={src}
-              alt={`${course.title} — image ${i + 1}`}
-              fill
-              sizes="(min-width: 640px) 50vw, 100vw"
-              className="object-cover"
-              priority={i === 0}
-            />
+            <CourseImage src={src} alt={`${course.title} — image ${i + 1}`} />
           </div>
         ))}
       </div>

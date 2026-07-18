@@ -2,12 +2,12 @@
 
 import { Button, Chip, EmptyState, Modal, useOverlayState } from "@heroui/react";
 import { BookOpen, Eye, PlusCircle, Trash2, TriangleAlert } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { ApiError } from "@/lib/api";
+import { CourseImage } from "@/components/CourseImage";
 import type { Course } from "@/lib/types";
 import { useDeleteCourse } from "@/hooks/useDeleteCourse";
 import { useMyCourses } from "@/hooks/useMyCourses";
@@ -185,13 +185,7 @@ export default function ManageCoursesPage() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <div className="relative h-11 w-14 shrink-0 overflow-hidden rounded-md bg-zinc-100">
-                              <Image
-                                src={course.images[0]!}
-                                alt={course.title}
-                                fill
-                                sizes="56px"
-                                className="object-cover"
-                              />
+                              <CourseImage src={course.images[0]!} alt={course.title} />
                             </div>
                             <span className="line-clamp-1 max-w-56 font-medium text-zinc-900">
                               {course.title}
@@ -244,13 +238,7 @@ export default function ManageCoursesPage() {
                     className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm"
                   >
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-100">
-                      <Image
-                        src={course.images[0]!}
-                        alt={course.title}
-                        fill
-                        sizes="(min-width: 640px) 50vw, 100vw"
-                        className="object-cover"
-                      />
+                      <CourseImage src={course.images[0]!} alt={course.title} />
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-1.5">
@@ -319,13 +307,7 @@ export default function ManageCoursesPage() {
                   {targetCourse && (
                     <div className="flex items-center gap-3 rounded-lg bg-zinc-50 p-3">
                       <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-md bg-zinc-200">
-                        <Image
-                          src={targetCourse.images[0]!}
-                          alt={targetCourse.title}
-                          fill
-                          sizes="64px"
-                          className="object-cover"
-                        />
+                        <CourseImage src={targetCourse.images[0]!} alt={targetCourse.title} />
                       </div>
                       <p className="truncate text-sm font-medium text-zinc-900">
                         {targetCourse.title}
