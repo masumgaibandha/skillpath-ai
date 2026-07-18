@@ -19,6 +19,7 @@ const LOGGED_IN_LINKS = [
   { href: "/", label: "Home" },
   { href: "/explore", label: "Explore" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/courses", label: "My Courses" },
   { href: "/dashboard/study-plan", label: "Study Plan" },
   { href: "/dashboard/chat", label: "Chat" },
   { href: "/items/add", label: "Add Course" },

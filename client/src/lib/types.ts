@@ -102,3 +102,7 @@ export interface EnrollmentStatusResponse {
 export interface CheckoutSessionResponse {
   url: string;
 }
+
+export interface MyEnrollmentsResponse {
+  items: Enrollment[];
+}
