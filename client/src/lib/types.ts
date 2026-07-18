@@ -196,3 +196,54 @@ export interface StudyPlanResponse {
 export interface StudyPlanConfigResponse {
   demoMode: boolean;
 }
+
+// Mirrors server's serializeConversation() output (chat.controller.ts).
+export type ChatMessageRole = "user" | "assistant";
+
+export interface ChatMessage {
+  role: ChatMessageRole;
+  content: string;
+  referencedCourses: CourseSummary[];
+  createdAt: string;
+}
+
+export interface ChatConversation {
+  _id: string;
+  userId: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Lightweight shape for the sidebar list — no message bodies.
+export interface ChatConversationListItem {
+  _id: string;
+  title: string;
+  messageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SendMessageInput {
+  content: string;
+  // Client-generated idempotency key for this send attempt — lets the
+  // server detect and replay a resubmitted request (double-click,
+  // repeated Enter, a network retry) instead of appending a duplicate
+  // user/assistant pair. See server's sendMessageSchema.
+  clientMessageId: string;
+}
+
+export interface ChatConversationsListResponse {
+  items: ChatConversationListItem[];
+}
+
+export interface ChatConversationResponse {
+  conversation: ChatConversation;
+}
+
+// Non-secret, derived flag only — mirrors StudyPlanConfigResponse (see
+// server's getChatConfig controller).
+export interface ChatConfigResponse {
+  demoMode: boolean;
+}

@@ -5,6 +5,7 @@ import { auth } from "./lib/auth.js";
 import { connectDB } from "./config/db.js";
 import { env } from "./config/env.js";
 import { stripeWebhook } from "./controllers/payment.controller.js";
+import chatRouter from "./routes/chat.route.js";
 import contactRouter from "./routes/contact.route.js";
 import courseRouter from "./routes/course.route.js";
 import enrollmentRouter from "./routes/enrollment.route.js";
@@ -51,6 +52,7 @@ app.use("/api/contact", contactRouter);
 app.use("/api/enrollments", enrollmentRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/study-plan", studyPlanRouter);
+app.use("/api/chat", chatRouter);
 
 // Express 5 forwards rejected promises from async route handlers here
 // automatically — no try/catch needed in the controllers above.
