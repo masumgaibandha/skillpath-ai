@@ -41,6 +41,30 @@ const envSchema = z.object({
     (v) => (v === "" ? undefined : v),
     z.string().min(1).optional()
   ),
+  // OpenAI, for the AI Study Planner. Optional, same pattern as Stripe
+  // above — the server still starts and every other feature still works
+  // with this unset; only study-plan generation/refinement is disabled
+  // (see src/lib/openai.ts). OPENAI_MODEL has a sensible default so it
+  // doesn't need to be set just to try the feature once a key is added.
+  OPENAI_API_KEY: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().min(1).optional()
+  ),
+  OPENAI_MODEL: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().min(1).optional()
+  ),
+  // Development-only escape hatch: generates study plans deterministically
+  // from real MongoDB course data without ever calling OpenAI, so the
+  // feature can be built/tested/demoed with no API billing. Real
+  // OPENAI_API_KEY/OPENAI_MODEL behavior is untouched when this is false
+  // (the default) — see src/lib/studyPlanDemo.ts and
+  // studyPlan.controller.ts, which branch on this flag and never fall
+  // back from a failed real OpenAI call into demo mode.
+  AI_DEMO_MODE: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.stringbool().default(false)
+  ),
 }).superRefine((data, ctx) => {
   // CLIENT_ORIGIN's localhost default exists purely for local dev
   // convenience. In production it must be explicitly set to the real

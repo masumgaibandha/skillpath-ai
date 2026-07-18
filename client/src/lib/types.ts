@@ -106,3 +106,93 @@ export interface CheckoutSessionResponse {
 export interface MyEnrollmentsResponse {
   items: Enrollment[];
 }
+
+// Mirrors server/src/utils/studyPlan.ts's CourseSummary — a trimmed course
+// shape embedded in study-plan responses, enough to render a card and link
+// to the real course without shipping the full Course document.
+export interface CourseSummary {
+  _id: string;
+  title: string;
+  slug: string;
+  images: string[];
+  category: string;
+  level: CourseLevel;
+  price: number;
+  isFree: boolean;
+  durationHours: number;
+}
+
+export interface StudyPlanInputs {
+  goal: string;
+  skillLevel: CourseLevel;
+  weeklyHours: number;
+  budget: number;
+  timeframeWeeks: number;
+  preferredTopics: string[];
+}
+
+export interface StudyPlanMilestone {
+  title: string;
+  description: string;
+  order: number;
+  estimatedWeeks: number;
+  estimatedHours: number;
+  courses: CourseSummary[];
+}
+
+export type StudyPlanRecommendedCourse = CourseSummary & {
+  reason: string;
+  matchScore: number;
+};
+
+export interface StudyPlanFeedbackEntry {
+  feedback: string;
+  requestedAt: string;
+}
+
+export type StudyPlanStatus = "active" | "archived";
+
+// Mirrors server's serializePlan() output (studyPlan.controller.ts).
+export interface StudyPlan {
+  _id: string;
+  userId: string;
+  title: string;
+  inputs: StudyPlanInputs;
+  summary: string;
+  recommendedCourses: StudyPlanRecommendedCourse[];
+  milestones: StudyPlanMilestone[];
+  risks: string[];
+  nextActions: string[];
+  version: number;
+  feedbackHistory: StudyPlanFeedbackEntry[];
+  generatedAt: string;
+  status: StudyPlanStatus;
+}
+
+// Mirrors server's createStudyPlanSchema (server/src/utils/studyPlan.ts).
+export interface CreateStudyPlanInput {
+  goal: string;
+  skillLevel: CourseLevel;
+  weeklyHours: number;
+  budget: number;
+  timeframeWeeks: number;
+  preferredTopics: string[];
+}
+
+export interface RefineStudyPlanInput {
+  feedback: string;
+}
+
+export interface MyStudyPlansResponse {
+  items: StudyPlan[];
+}
+
+export interface StudyPlanResponse {
+  studyPlan: StudyPlan;
+}
+
+// Non-secret, derived flag only — never the raw OPENAI_API_KEY/AI_DEMO_MODE
+// env values themselves (see server's getStudyPlanConfig controller).
+export interface StudyPlanConfigResponse {
+  demoMode: boolean;
+}

@@ -11,6 +11,7 @@ import enrollmentRouter from "./routes/enrollment.route.js";
 import healthRouter from "./routes/health.route.js";
 import meRouter from "./routes/me.route.js";
 import paymentRouter from "./routes/payment.route.js";
+import studyPlanRouter from "./routes/studyPlan.route.js";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/api/courses", courseRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/enrollments", enrollmentRouter);
 app.use("/api/payments", paymentRouter);
+app.use("/api/study-plan", studyPlanRouter);
 
 // Express 5 forwards rejected promises from async route handlers here
 // automatically — no try/catch needed in the controllers above.
