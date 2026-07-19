@@ -164,3 +164,11 @@ _Screenshots have not been added yet — this section is a placeholder for whoev
 - `docs/screenshots/study-planner.png` — AI Study Planner with a generated plan
 - `docs/screenshots/chat.png` — AI Chat Assistant with a referenced-course card
 - `docs/screenshots/mobile.png` — Mobile responsive view
+
+`
+## Author:
+- Abdullah Al Masum
+- Full Stack Developer
+- masum@masumdev.com
+- masumdev.com
+`
