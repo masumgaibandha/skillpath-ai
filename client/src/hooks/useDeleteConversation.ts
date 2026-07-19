@@ -9,8 +9,9 @@ export function useDeleteConversation() {
   return useMutation({
     mutationFn: (conversationId: string) =>
       fetchClientApi<{ ok: true }>(`/chat/conversations/${conversationId}`, { method: "DELETE" }),
-    onSuccess: () => {
+    onSuccess: (_data, conversationId) => {
       queryClient.invalidateQueries({ queryKey: ["chat-conversations"] });
+      queryClient.removeQueries({ queryKey: ["chat-conversation", conversationId] });
       toast.success("Conversation deleted");
     },
     onError: (error) => {

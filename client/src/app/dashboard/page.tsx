@@ -7,6 +7,7 @@ import {
   DollarSign,
   GraduationCap,
   LayoutGrid,
+  MessageSquare,
   PlusCircle,
   Sparkles,
   TriangleAlert,
@@ -27,6 +28,7 @@ import {
 import { CourseCard, CourseCardSkeleton } from "@/components/CourseCard";
 import { useMyCourses } from "@/hooks/useMyCourses";
 import { useMyEnrollments } from "@/hooks/useMyEnrollments";
+import { useMyStudyPlans } from "@/hooks/useMyStudyPlans";
 import { authClient } from "@/lib/auth-client";
 import type { Course, Enrollment } from "@/lib/types";
 
@@ -79,9 +81,11 @@ export default function DashboardPage() {
 
   const enrollments = useMyEnrollments();
   const ownedCourses = useMyCourses();
+  const studyPlans = useMyStudyPlans();
 
   const enrolledCount = enrollments.data?.items.length ?? 0;
   const ownedCount = ownedCourses.data?.items.length ?? 0;
+  const studyPlanCount = studyPlans.data?.items.length ?? 0;
   const totalSpent = useMemo(
     () => (enrollments.data?.items ?? []).reduce((sum, e) => sum + (e.amountPaid || 0), 0),
     [enrollments.data]
@@ -105,7 +109,7 @@ export default function DashboardPage() {
   }
 
   const firstName = (session.user.name || session.user.email || "there").split(" ")[0];
-  const isLoading = enrollments.isLoading || ownedCourses.isLoading;
+  const isLoading = enrollments.isLoading || ownedCourses.isLoading || studyPlans.isLoading;
   const isError = enrollments.isError || ownedCourses.isError;
 
   return (
@@ -136,13 +140,7 @@ export default function DashboardPage() {
               <>
                 <SummaryCard icon={GraduationCap} label="Enrolled Courses" value={enrolledCount} />
                 <SummaryCard icon={LayoutGrid} label="Owned Courses" value={ownedCount} />
-                <SummaryCard
-                  icon={Sparkles}
-                  label="Active Study Plans"
-                  value={0}
-                  caption="Coming in a future update"
-                  accent="amber"
-                />
+                <SummaryCard icon={Sparkles} label="Study Plans" value={studyPlanCount} accent="amber" />
                 <SummaryCard
                   icon={DollarSign}
                   label="Total Spending"
@@ -269,6 +267,20 @@ export default function DashboardPage() {
                   >
                     <GraduationCap size={16} className="text-indigo-600" />
                     View my courses
+                  </Link>
+                  <Link
+                    href="/dashboard/study-plan"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+                  >
+                    <Sparkles size={16} className="text-indigo-600" />
+                    AI Study Planner
+                  </Link>
+                  <Link
+                    href="/dashboard/chat"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+                  >
+                    <MessageSquare size={16} className="text-indigo-600" />
+                    AI Chat Assistant
                   </Link>
                   <Link
                     href="/items/add"

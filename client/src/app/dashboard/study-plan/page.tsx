@@ -71,7 +71,11 @@ function GenerationProgress() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-zinc-200 bg-white p-10 text-center shadow-sm">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center rounded-2xl border border-zinc-200 bg-white p-10 text-center shadow-sm"
+    >
       <div className="relative flex h-12 w-12 items-center justify-center">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-30" />
         <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white">

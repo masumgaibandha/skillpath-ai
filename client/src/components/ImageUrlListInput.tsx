@@ -85,7 +85,6 @@ export function ImageUrlListInput({ value, onChange, max = 4 }: ImageUrlListInpu
     <div className="flex flex-col gap-2">
       {value.map((url, index) => (
         <ImageUrlRow
-          // eslint-disable-next-line react/no-array-index-key
           key={index}
           url={url}
           index={index}

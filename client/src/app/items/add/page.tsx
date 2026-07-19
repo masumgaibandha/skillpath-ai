@@ -4,7 +4,7 @@ import { Button, Input, TextArea } from "@heroui/react";
 import { CheckCircle2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { COURSE_CATEGORIES } from "@/lib/constants";
 import { ApiError } from "@/lib/api";
@@ -62,6 +62,7 @@ export default function AddCoursePage() {
   }, [isPending, session, router]);
 
   const createCourse = useCreateCourse();
+  const isSubmittingRef = useRef(false);
   const [createdCourse, setCreatedCourse] = useState<Course | null>(null);
   const [imagesError, setImagesError] = useState<string | null>(null);
 
@@ -97,6 +98,7 @@ export default function AddCoursePage() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmittingRef.current || createCourse.isPending) return;
     setImagesError(null);
 
     const imageUrls = nonEmpty(images);
@@ -117,6 +119,7 @@ export default function AddCoursePage() {
       return;
     }
 
+    isSubmittingRef.current = true;
     createCourse.mutate(
       {
         title,
@@ -132,7 +135,12 @@ export default function AddCoursePage() {
         prerequisites: nonEmpty(prerequisites),
         images: imageUrls,
       },
-      { onSuccess: (data) => setCreatedCourse(data.course) }
+      {
+        onSuccess: (data) => setCreatedCourse(data.course),
+        onSettled: () => {
+          isSubmittingRef.current = false;
+        },
+      }
     );
   }
 

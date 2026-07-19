@@ -21,7 +21,6 @@ export function ListInput({ value, onChange, placeholder, addLabel }: ListInputP
   return (
     <div className="flex flex-col gap-2">
       {value.map((item, index) => (
-        // eslint-disable-next-line react/no-array-index-key
         <div key={index} className="flex items-center gap-2">
           <input
             type="text"

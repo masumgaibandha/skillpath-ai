@@ -4,7 +4,7 @@ import { Button, Input, toast } from "@heroui/react";
 import { CheckCircle2, TriangleAlert, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { GoogleIcon } from "@/components/GoogleIcon";
 import { PasswordInput } from "@/components/PasswordInput";
 import { authClient } from "@/lib/auth-client";
@@ -17,17 +17,14 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get("registered") === "true";
 
-  const [email, setEmail] = useState("");
+  // Signup (autoSignIn is disabled server-side) forwards the just-
+  // registered email here so the user doesn't have to retype it — read
+  // once as the initial state rather than syncing via an effect, since
+  // this only needs to run on first mount.
+  const [email, setEmail] = useState(() => searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    // Signup (autoSignIn is disabled server-side) forwards the just-
-    // registered email here so the user doesn't have to retype it.
-    const emailParam = searchParams.get("email");
-    if (emailParam) setEmail(emailParam);
-  }, [searchParams]);
 
   async function handleEmailSignIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,10 +47,14 @@ export default function LoginPage() {
   async function handleDemoLogin() {
     // Visibly populate the fields first, then sign in with the same
     // values — this must never be a silent sign-in with no visible fill.
+    // The deliberate pause guarantees a human actually sees the fields
+    // fill in before submission, regardless of how fast the network
+    // response would otherwise arrive.
     setEmail(DEMO_EMAIL);
     setPassword(DEMO_PASSWORD);
     setError(null);
     setIsSubmitting(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const { error: signInError } = await authClient.signIn.email({
       email: DEMO_EMAIL,

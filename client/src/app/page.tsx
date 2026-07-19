@@ -168,7 +168,7 @@ export default async function Home() {
                 <p className="mt-3 font-semibold text-white">Chat Assistant</p>
                 <p className="mt-2 text-sm text-zinc-300">
                   Ask questions in plain language — the assistant can search the course catalog
-                  directly and recommend courses that match what you're asking for.
+                  directly and recommend courses that match what you&apos;re asking for.
                 </p>
               </div>
             </div>

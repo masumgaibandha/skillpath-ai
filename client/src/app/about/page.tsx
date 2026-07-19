@@ -19,7 +19,7 @@ export default async function AboutPage() {
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold text-zinc-900 sm:text-4xl">About SkillPath AI</h1>
       <p className="mt-4 max-w-3xl text-lg text-zinc-600">
-        Most course catalogs are just a list — you're expected to already know what to search
+        Most course catalogs are just a list — you&apos;re expected to already know what to search
         for and in what order to take things. SkillPath AI exists to close that gap: a real
         course catalog paired with AI that turns a goal into an actual plan.
       </p>
@@ -112,7 +112,7 @@ export default async function AboutPage() {
         <h2 className="text-xl font-semibold text-zinc-900">Who owns what</h2>
         <p className="mt-3 text-sm text-zinc-600">
           Course management here is owner-based, not admin-gated: any signed-up user can add and
-          manage their own courses from their dashboard. There's no approval queue — it's built
+          manage their own courses from their dashboard. There&apos;s no approval queue — it&apos;s built
           this way so the catalog reflects real contributions rather than a single gatekeeper.
         </p>
       </section>

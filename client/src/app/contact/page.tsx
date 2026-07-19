@@ -43,7 +43,7 @@ export default function ContactPage() {
       <h1 className="text-3xl font-bold text-zinc-900 sm:text-4xl">Contact us</h1>
       <p className="mt-4 text-lg text-zinc-600">
         Questions about a course, your account, or the platform in general — send a message and
-        we'll get back to you.
+        we&apos;ll get back to you.
       </p>
 
       <div className="mt-6 flex items-center gap-2 text-sm text-zinc-500">
@@ -58,7 +58,7 @@ export default function ContactPage() {
           <CheckCircle2 className="text-indigo-600" size={40} />
           <p className="mt-4 text-lg font-semibold text-zinc-900">Message sent</p>
           <p className="mt-1 text-zinc-500">
-            Thanks for reaching out — we've received your message and will respond by email.
+            Thanks for reaching out — we&apos;ve received your message and will respond by email.
           </p>
           <Button variant="outline" size="sm" className="mt-6" onPress={() => setStatus("idle")}>
             Send another message

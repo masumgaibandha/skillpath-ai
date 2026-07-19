@@ -70,13 +70,15 @@ export function EnrollAction({ course }: { course: Course }) {
 
   if (course.isFree) {
     // freeEnroll's onError already fires a toast (see hooks/useFreeEnroll)
-    // — no need to duplicate that message inline here too.
+    // — no need to duplicate that message inline here too. isPending also
+    // guards against a rapid double-click firing twice (the server's
+    // unique {userId, courseId} index is the real backstop either way).
     return (
       <Button
         variant="primary"
         fullWidth
         isDisabled={freeEnroll.isPending}
-        onPress={() => freeEnroll.mutate()}
+        onPress={() => !freeEnroll.isPending && freeEnroll.mutate()}
       >
         {freeEnroll.isPending ? "Enrolling…" : "Enroll for free"}
       </Button>
@@ -89,7 +91,7 @@ export function EnrollAction({ course }: { course: Course }) {
       variant="primary"
       fullWidth
       isDisabled={checkout.isPending}
-      onPress={() => checkout.mutate(course._id)}
+      onPress={() => !checkout.isPending && checkout.mutate(course._id)}
     >
       {checkout.isPending ? "Redirecting to checkout…" : `Buy course — $${course.price.toFixed(2)}`}
     </Button>
