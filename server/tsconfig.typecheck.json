@@ -5,5 +5,9 @@
     "outDir": null,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "api/**/*.ts"]
+  "include": ["src/**/*.ts", "api/**/*.ts"],
+  // Overrides tsconfig.json's exclude (which "extends" would otherwise
+  // inherit as-is) so *.test.ts files — excluded from the production
+  // build — still get typechecked here.
+  "exclude": ["node_modules", "dist"]
 }

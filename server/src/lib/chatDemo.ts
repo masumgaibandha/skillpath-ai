@@ -237,18 +237,31 @@ async function handleCourseFollowUp(lower: string, history: DemoChatHistoryEntry
 
 // --- Small, explicit glossary for non-course educational questions ---
 
-const GLOSSARY: Record<string, string> = {
-  html: "HTML stands for HyperText Markup Language. It's the standard markup language used to structure content on the web.",
-  css: "CSS stands for Cascading Style Sheets. It's used to style and lay out HTML content — colors, spacing, layout, and more.",
+export const GLOSSARY: Record<string, string> = {
+  html: "HTML stands for HyperText Markup Language — the standard markup language used to structure content on the web.",
+  css: "CSS stands for Cascading Style Sheets — used to style and lay out HTML content: colors, spacing, layout, and more.",
   javascript: "JavaScript is a programming language that adds interactivity and logic to web pages, and can also run on servers (e.g. via Node.js).",
   react: "React is a JavaScript library for building user interfaces out of reusable components.",
   api: "API stands for Application Programming Interface — a set of rules that lets different software systems communicate with each other.",
   http: "HTTP stands for HyperText Transfer Protocol — the protocol web browsers and servers use to exchange data.",
+  https: "HTTPS stands for HyperText Transfer Protocol Secure — HTTP encrypted with TLS/SSL so data exchanged between a browser and server can't be read or tampered with in transit.",
+  url: "URL stands for Uniform Resource Locator — the address used to locate a specific resource (a web page, image, API endpoint, etc.) on the internet.",
   sql: "SQL stands for Structured Query Language — used to query and manage data in relational databases.",
+  crud: "CRUD stands for Create, Read, Update, Delete — the four basic operations most applications perform on stored data.",
+  mern: "MERN stands for MongoDB, Express.js, React, and Node.js — a popular JavaScript stack for building full-stack web applications.",
+  mean: "MEAN stands for MongoDB, Express.js, Angular, and Node.js — a JavaScript stack similar to MERN but using Angular instead of React on the frontend.",
+  dom: "DOM stands for Document Object Model — the browser's in-memory tree representation of a web page, which JavaScript reads and modifies to update what's on screen.",
+  json: "JSON stands for JavaScript Object Notation — a lightweight, text-based format for representing structured data, widely used for APIs and config files.",
+  jwt: "JWT stands for JSON Web Token — a compact, signed token format commonly used to represent an authenticated user's identity between a client and server.",
+  rest: "REST stands for Representational State Transfer — an architectural style for designing web APIs around resources and standard HTTP methods (GET, POST, PUT, DELETE).",
+  cli: "CLI stands for Command-Line Interface — a text-based way of interacting with a program by typing commands, instead of using a graphical interface.",
+  ide: "IDE stands for Integrated Development Environment — a single application (like VS Code or WebStorm) that bundles a code editor, debugger, and other developer tools together.",
+  dbms: "DBMS stands for Database Management System — software that lets you create, query, update, and manage a database (e.g. MongoDB, PostgreSQL, MySQL).",
+  oop: "OOP stands for Object-Oriented Programming — a programming style that organizes code around objects combining data and behavior, using concepts like classes, inheritance, and encapsulation.",
   git: "Git is a distributed version control system used to track changes in code and collaborate with other developers.",
 };
 
-const GLOSSARY_ALIASES: Record<string, string> = {
+export const GLOSSARY_ALIASES: Record<string, string> = {
   js: "javascript",
   reactjs: "react",
   "react.js": "react",
@@ -256,8 +269,8 @@ const GLOSSARY_ALIASES: Record<string, string> = {
 
 // Words/phrases that signal the learner actually wants course info, not a
 // definition — checked before treating a message as a glossary question,
-// so e.g. "recommend a React course" still searches the catalog instead
-// of defining "React".
+// so e.g. "recommend a MERN course" still searches the catalog instead of
+// only returning the glossary definition for "MERN".
 const COURSE_INTENT_PHRASES = [
   "course", "courses", "recommend", "recommendation", "suggest", "suggestion",
   "learning path", "enroll", "class", "compare", "versus", " vs ",
@@ -265,24 +278,62 @@ const COURSE_INTENT_PHRASES = [
   "free", "budget", "cheap", "catalog",
 ];
 
-function mentionsCourseIntent(lower: string): boolean {
+export function mentionsCourseIntent(lower: string): boolean {
   return COURSE_INTENT_PHRASES.some((p) => lower.includes(p));
 }
 
-/** Returns a glossary answer, an honest "not in the demo glossary"
- * message, or null if the message doesn't read as an educational
- * question at all (so the caller falls through to other intents). Never
- * invents a definition outside GLOSSARY. */
-function matchGlossaryQuestion(lower: string): ChatReply | null {
-  const match =
-    lower.match(/\bfull form of\s+([a-z0-9.+#]+)\??\s*$/) ??
-    lower.match(/\bwhat does\s+([a-z0-9.+#]+)\s+stand for\??\s*$/) ??
-    lower.match(/\bwhat is\s+([a-z0-9.+#]+)\??\s*$/) ??
-    lower.match(/\bdefine\s+([a-z0-9.+#]+)\??\s*$/) ??
-    lower.match(/\bmeaning of\s+([a-z0-9.+#]+)\??\s*$/);
-  if (!match) return null;
+// Every phrasing this demo supports for "what does X mean/stand for",
+// tried in order — most specific first, so e.g. "what is the full form of
+// html" is captured by the "full form" pattern rather than misfiring the
+// generic trailing "what is X" pattern. Each must fully consume the rest
+// of the (already-normalized) message after the term, so a longer
+// sentence that merely contains one of these phrases mid-way without
+// actually being a definition question won't false-positive.
+const ACRONYM_QUESTION_PATTERNS: RegExp[] = [
+  // "full form of X" / "full form X" / "what is the full form of X"
+  /\bfull\s+form\s+(?:of\s+)?(?:the\s+)?([a-z0-9.+#]+)\s*$/,
+  // "what does X stand for" / "what does X stands for"
+  /\bwhat\s+does\s+(?:the\s+)?([a-z0-9.+#]+)\s+stands?\s+for\s*$/,
+  // "X stands for what" — anchored to the whole message to avoid
+  // misfiring inside an unrelated longer sentence.
+  /^([a-z0-9.+#]+)\s+stands?\s+for\s+what\s*$/,
+  // "meaning of X"
+  /\bmeaning\s+of\s+(?:the\s+)?([a-z0-9.+#]+)\s*$/,
+  // "define X"
+  /\bdefine\s+(?:the\s+)?([a-z0-9.+#]+)\s*$/,
+  // "what is X" — kept last and most generic; only matches when nothing
+  // more specific above already did.
+  /\bwhat\s+is\s+(?:the\s+)?([a-z0-9.+#]+)\s*$/,
+];
 
-  const raw = match[1]!.replace(/[?.]+$/, "");
+/** Lowercases, collapses whitespace, and strips trailing punctuation so
+ * "Full  Form of HTML?", "full form of html", and "FULL FORM OF HTML!!"
+ * all normalize identically before pattern matching. */
+function normalizeQuestion(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[?!.,;:]+$/, "");
+}
+
+/** Returns a glossary answer, an honest "not in the demo glossary"
+ * message, or null if the message doesn't read as a definition/acronym
+ * question at all (so the caller falls through to other intents). Never
+ * invents a definition outside GLOSSARY, and never attaches a course. */
+export function matchGlossaryQuestion(message: string): ChatReply | null {
+  const normalized = normalizeQuestion(message);
+
+  let raw: string | null = null;
+  for (const pattern of ACRONYM_QUESTION_PATTERNS) {
+    const match = normalized.match(pattern);
+    if (match) {
+      raw = match[1]!;
+      break;
+    }
+  }
+  if (!raw) return null;
+
   const term = GLOSSARY_ALIASES[raw] ?? raw;
   const definition = GLOSSARY[term];
 
@@ -290,9 +341,7 @@ function matchGlossaryQuestion(lower: string): ChatReply | null {
     return { content: definition, referencedCourseIds: [] };
   }
   return {
-    content:
-      `I don't have a definition for "${raw}" in Demo AI Mode — I can define HTML, CSS, JavaScript, React, API, HTTP, ` +
-      `SQL, or Git, or search the catalog for a related course if you'd like.`,
+    content: "That term is not available in the Demo AI glossary yet. Ask about a course, or try another common web-development term.",
     referencedCourseIds: [],
   };
 }
