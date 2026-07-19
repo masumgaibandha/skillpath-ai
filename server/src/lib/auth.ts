@@ -9,9 +9,61 @@ import { isStrongPassword, PASSWORD_REQUIREMENTS_MESSAGE } from "../utils/passwo
 // (user/session/account/verification). Deliberately independent of the
 // Mongoose connection in config/db.ts — the native driver connects lazily
 // on first use, so this can be constructed synchronously at module load
-// time without waiting on Mongoose's async connect().
-const client = new MongoClient(env.MONGODB_URI);
+// time without waiting on Mongoose's async connect(). Exported so tests
+// that import `auth` can explicitly close it in their own teardown —
+// otherwise the open connection keeps a test runner process alive
+// indefinitely after all tests finish.
+export const authMongoClient = new MongoClient(env.MONGODB_URI);
+const client = authMongoClient;
 const db = client.db();
+
+// Better Auth's own sign-up flow checks "does a user with this email
+// already exist" and then inserts as two separate, non-atomic steps. Two
+// near-simultaneous sign-up requests for the same email (a double-click,
+// a client-side retry, or just an unlucky race) can both pass that check
+// before either has committed, creating two real user+credential
+// documents for one email. Login then depends on whichever duplicate a
+// later query happens to resolve — the other real password looks
+// "wrong" even though its account genuinely exists. A case-insensitive
+// unique index makes MongoDB itself reject the second insert instead of
+// silently allowing the duplicate.
+//
+// This must be awaited to completion before any sign-up/sign-in traffic
+// is served — running it as fire-and-forget at module load left a window
+// on every cold start where a request could race ahead of index creation
+// and hit the exact TOCTOU bug it exists to prevent. Callers (index.ts's
+// startup sequence for traditional hosting, and the auth-route guard in
+// app.ts for serverless invocations) await this and must refuse to serve
+// authentication requests if it rejects — silently continuing without the
+// constraint is the bug this whole fix exists to close. Memoized so
+// concurrent callers share one in-flight attempt instead of issuing
+// createIndex repeatedly; resets on failure so a transient error (e.g. the
+// database still warming up) doesn't permanently wedge the server into
+// never retrying.
+let authIndexesPromise: Promise<void> | null = null;
+
+export async function ensureAuthIndexes(): Promise<void> {
+  if (!authIndexesPromise) {
+    authIndexesPromise = db
+      .collection("user")
+      .createIndex(
+        { email: 1 },
+        { unique: true, collation: { locale: "en", strength: 2 }, name: "email_unique_ci" }
+      )
+      .then(() => undefined)
+      .catch((err: unknown) => {
+        authIndexesPromise = null;
+        // Deliberately generic — the underlying driver error can embed
+        // connection details and must never be logged verbatim.
+        console.error(
+          "[auth] Failed to initialize the required unique index on user.email. " +
+            "Refusing to serve authentication traffic without duplicate-account protection."
+        );
+        throw new Error("Auth index initialization failed", { cause: err });
+      });
+  }
+  return authIndexesPromise;
+}
 
 const googleConfigured = Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 

@@ -4,7 +4,7 @@ import { Button, Input, toast } from "@heroui/react";
 import { Check, TriangleAlert, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PASSWORD_REQUIREMENTS, isStrongPassword } from "@/lib/password";
 import { GoogleIcon } from "@/components/GoogleIcon";
@@ -31,6 +31,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const passwordTouched = password.length > 0;
   const confirmTouched = confirmPassword.length > 0;
@@ -41,6 +42,13 @@ export default function SignupPage() {
 
   async function handleSignUp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Belt-and-suspenders against a double-click or double-Enter firing two
+    // sign-up requests for the same email in quick succession — the real
+    // guarantee against a duplicate account is the server's unique index
+    // on user.email (see server/src/lib/auth.ts), but avoiding the
+    // duplicate request in the first place also avoids a confusing extra
+    // "couldn't create account" error on the losing request.
+    if (isSubmittingRef.current || isSubmitting) return;
     setError(null);
 
     if (!isStrongPassword(password)) {
@@ -62,14 +70,18 @@ export default function SignupPage() {
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     const { error: signUpError } = await authClient.signUp.email({
       name,
-      email,
+      // Stray leading/trailing whitespace (e.g. from a copy-paste) would
+      // otherwise fail server-side email validation outright.
+      email: email.trim(),
       password,
       image: imageProvided ? imageUrl.trim() : undefined,
     });
 
+    isSubmittingRef.current = false;
     setIsSubmitting(false);
     if (signUpError) {
       const message = signUpError.message ?? "Could not create your account.";

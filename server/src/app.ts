@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth.js";
+import { auth, ensureAuthIndexes } from "./lib/auth.js";
 import { connectDB } from "./config/db.js";
 import { env } from "./config/env.js";
 import { stripeWebhook } from "./controllers/payment.controller.js";
@@ -35,7 +35,26 @@ app.use(async (_req, _res, next) => {
 // the raw request stream (it parses the body itself), not one already
 // consumed by express.json(). Express 5's path-to-regexp wildcard needs a
 // name: "/*splat", not the old Express 4 bare "*".
-app.all("/api/auth/*splat", toNodeHandler(auth));
+//
+// Serverless invocations have no blocking startup phase (that's
+// index.ts's main(), which only runs under traditional/local hosting) —
+// each cold start must independently guarantee the unique-email index
+// exists before serving any auth traffic. ensureAuthIndexes() is
+// memoized, so on a warm container this resolves immediately; scoped to
+// just this route so an index-init failure doesn't take down unrelated
+// routes like /api/health that don't depend on it.
+app.all(
+  "/api/auth/*splat",
+  async (_req, res, next) => {
+    try {
+      await ensureAuthIndexes();
+      next();
+    } catch {
+      res.status(503).json({ error: "Service temporarily unavailable" });
+    }
+  },
+  toNodeHandler(auth)
+);
 
 // Same reasoning as Better Auth above: Stripe's webhook signature check
 // needs the exact raw request bytes, not a body express.json() already

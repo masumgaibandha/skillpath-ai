@@ -31,7 +31,7 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
 
-    const { error: signInError } = await authClient.signIn.email({ email, password });
+    const { error: signInError } = await authClient.signIn.email({ email: email.trim(), password });
 
     setIsSubmitting(false);
     if (signInError) {
