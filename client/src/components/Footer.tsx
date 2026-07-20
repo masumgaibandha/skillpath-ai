@@ -18,7 +18,7 @@ const FOOTER_LINKS = [
       { label: "Explore courses", href: "/explore" },
       { label: "AI Study Planner", href: "/dashboard/study-plan" },
       { label: "AI Learning Chat", href: "/dashboard/chat" },
-      { label: "My Courses", href: "/dashboard/my-courses" },
+      { label: "My Courses", href: "/dashboard/courses" },
     ],
   },
   {
